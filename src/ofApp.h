@@ -5,6 +5,7 @@
 #include "ofxNetwork.h"
 #include "ofxBox2d.h"
 #include "ElemAnchor.h"
+#include "ElemBall.h"
 #include "Utils.h"
 
 class EntityData {
@@ -103,17 +104,21 @@ public:
 
     // game
     GameState state = IDLE;
+    long tStateChanged = 0;
 
     // graphics
-    map<string, ofTrueTypeFont> fonts;
+    map<string, shared_ptr<ofTrueTypeFont>> fonts;
 
     // box 2d
     ofxBox2d                                    box2d;			  //	the box2d world
     long idCount = 0;
 
     vector		<shared_ptr<ElemAnchor>>	anchors;		// ball hangings
-    vector		<shared_ptr<ofxBox2dCircle>>	balls;		  //	christmas balls
+    vector		<shared_ptr<ElemBall>>	balls;		  //	christmas balls
     vector		<shared_ptr<ofxBox2dJoint>>	    joints;			  //	joints
     map<string, string> jointsToCreate;
     vector<string> jointsToDelete;
+
+
+    ofTrueTypeFont	verdana14;
 };

@@ -3,8 +3,7 @@
 
 namespace Utils
 {
-
-	map<string,ofTrueTypeFont> loadFonts(ofJson des);
-	ofTrueTypeFont loadFont(ofJson des);
+	map<string,shared_ptr<ofTrueTypeFont>> loadFonts(ofJson des);
+	shared_ptr<ofTrueTypeFont> loadFont(ofJson des);
 };
 

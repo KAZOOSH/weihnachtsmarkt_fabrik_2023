@@ -15,6 +15,7 @@ int main()
 	settings.setPosition(glm::vec2(jSettings[0]["position"][0], jSettings[0]["position"][1]));
 	settings.resizable = false;
 	settings.transparent = true;
+
 	auto mainWindow = ofCreateWindow(settings);
 	
 	auto mainApp = make_shared<ofApp>();

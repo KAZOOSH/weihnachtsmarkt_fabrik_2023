@@ -6,6 +6,8 @@ void ofApp::setup() {
     ofSetFrameRate(60);
     ofSetVerticalSync(true);
     ofEnableSmoothing();
+    ofSetCircleResolution(200);
+    ofTrueTypeFont::setGlobalDpi(72);
 
     settings = ofLoadJson("settings.json");
 
@@ -369,6 +371,7 @@ void ofApp::keyPressed(int key) {
 
 void ofApp::mousePressed(int x, int y, int button)
 {
+    if (button > 1) button = 1;
     createBall(x, y, button);
 }
 
@@ -477,9 +480,15 @@ void ofApp::contactEnd(ofxBox2dContactArgs& e)
 
 void ofApp::createBall(int x, int y, int owner)
 {
-    auto c = std::make_shared<ofxBox2dCircle>();
+    auto c = std::make_shared<ElemBall>();
     c->setPhysics(1, 0.5, 0.9);
     c->setup(box2d.getWorld(), x, y, ofRandom(20, 50));
+    c->color = ofColor(
+        settings["style"]["player"]["colors"][owner][0].get<int>(),
+        settings["style"]["player"]["colors"][owner][1].get<int>(),
+        settings["style"]["player"]["colors"][owner][2].get<int>(),
+        settings["style"]["player"]["colors"][owner][3].get<int>()
+    );
     c->setData(new EntityData());
     auto* sd = (EntityData*)c->getData();
     sd->id = "b" + ofToString(idCount);
@@ -567,6 +576,7 @@ void ofApp::updateJoints()
 void ofApp::setState(GameState newState)
 {
     state = newState;
+    tStateChanged = ofGetElapsedTimeMillis();
 
     switch (state) {
     case IDLE: {
@@ -617,12 +627,19 @@ void ofApp::updateIdle()
 
 void ofApp::updateGame()
 {
-    
+    if (ofGetElapsedTimeMillis() - tStateChanged > settings["gameObjects"]["gameTime"].get<int>() * 1000) {
+        //end game
+        setState(FINISH);
+    }
 }
 
 void ofApp::drawPhysicsWorld()
 {
-    ofSetHexColor(0xf2ab01);
+    for (auto& joint : joints) {
+        ofSetHexColor(0x444342);
+        joint->draw();
+    }
+
     for (auto& anchor : anchors)
     {
         anchor->draw();
@@ -630,37 +647,35 @@ void ofApp::drawPhysicsWorld()
 
 
     for (auto& circle : balls) {
-        ofFill();
         auto* sd = (EntityData*)circle->getData();
-
-        if (sd->owner == 0) {
-            ofSetHexColor(0x01b1f2);
-        }
-        else {
-            ofSetColor(235, 51, 35);
-        }
-
-
         circle->draw();
     }
 
-    for (auto& joint : joints) {
-        ofSetHexColor(0x444342);
-        joint->draw();
-    }
+    
 }
 
 void ofApp::drawIdle()
 {
-    ofSetColor(255);
-    fonts["Header"].drawString("Schmücke die Gestecke", 155, 92);
+    
     
     drawPhysicsWorld();
+
+    ofSetColor(255);
+    fonts["head"]->drawString("Schmücke die Gestecke", 155, 92);
 }
 
 void ofApp::drawGame()
 {
     drawPhysicsWorld();
+
+    int tLeft = (settings["gameObjects"]["gameTime"].get<int>() * 1000 - ofGetElapsedTimeMillis() - tStateChanged) / 1000;
+    int t1 = tLeft / 60;
+    int t2 = tLeft % 60;
+    string timer = t1 < 10 ? "0" + ofToString(t1) : ofToString(t1);
+    timer += ":";
+    timer += t2 < 10 ? "0" + ofToString(t2) : ofToString(t2);
+
+    fonts["timer"]->drawString(timer, 155, 92);
 }
 
 void ofApp::clearWorld()

@@ -42,28 +42,7 @@
                 0.45
             ]
         ],
-        "maxElems": 30,
-        "probabilitySpecialObjects": 0.1,
-        "specialObjects": [
-            [
-                "img/pissoir.png",
-                "sound/splash1.wav",
-                0.03,
-                0.07
-            ],
-            [
-                "img/hecht.png",
-                "sound/splash1.wav",
-                0.08,
-                0.13
-            ],
-            [
-                "img/kuh2.png",
-                "sound/splash1.wav",
-                0.08,
-                0.12
-            ]
-        ]
+        "gameTime": 90
     },
     "network": {
         "port": 8888
@@ -133,7 +112,33 @@
                 ],
                 "font": "fonts/BerkshireSwash-Regular.ttf",
                 "size": 70
+            },
+            "timer": {
+                "color": [
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "font": "fonts/BerkshireSwash-Regular.ttf",
+                "size": 100
             }
+        },
+        "player": {
+            "colors": [
+                [
+                    235,
+                    51,
+                    35,
+                    255
+                ],
+                [
+                    212,
+                    175,
+                    55,
+                    255
+                ]
+            ]
         }
     }
 }
