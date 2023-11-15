@@ -24,12 +24,13 @@ public:
 };
 
 struct GameEventArgs {
-    string id;
+    int id;
     ofVec2f position;
 };
 
 enum GameState {
     IDLE,
+    START,
     GAME,
     FINISH
 };
@@ -53,6 +54,7 @@ public:
     void drawScreen(int screenId);
     void processKeyPressedEvent(int key, int screenId);
     void keyPressed(int key);
+    void mouseMoved(int x, int y);
     void mousePressed(int x, int y, int button);
     void onGameEvent(GameEventArgs& ev);
 
@@ -73,11 +75,13 @@ public:
 
     void drawPhysicsWorld();
     void drawIdle();
+    void drawStart();
     void drawGame();
+    void drawFinish();
 
     void clearWorld();
 
-
+    void drawCrosshair(ofVec2f pos, ofColor color);
 
     ofTexture loadTexture(string path);
 
@@ -94,17 +98,18 @@ public:
 
 
     //catapult 
-    int catapultPos = 0;
-    ofColor currentColor;
+    vector<ofVec2f> catapultPos;
 
     int nElems = 0;
 
-    long lastshot = 0;
+    vector<long> lastshot = {0,0};
 
 
     // game
     GameState state = IDLE;
     long tStateChanged = 0;
+    int scoreP1 = 0;
+    int scoreP2 = 0;
 
     // graphics
     map<string, shared_ptr<ofTrueTypeFont>> fonts;
@@ -120,5 +125,4 @@ public:
     vector<string> jointsToDelete;
 
 
-    ofTrueTypeFont	verdana14;
 };

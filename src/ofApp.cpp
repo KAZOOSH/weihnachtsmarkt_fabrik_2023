@@ -1,7 +1,8 @@
 #include "ofApp.h"
 
 //--------------------------------------------------------------
-void ofApp::setup() {
+void ofApp::setup()
+{
     ofSeedRandom();
     ofSetFrameRate(60);
     ofSetVerticalSync(true);
@@ -11,19 +12,17 @@ void ofApp::setup() {
 
     settings = ofLoadJson("settings.json");
 
-
-    //create the socket
+    // create the socket
     ofxUDPSettings udpSettings;
     udpSettings.receiveOn(settings["network"]["port"].get<int>());
     udpSettings.blocking = false;
     udpConnection.Setup(udpSettings);
 
-
     // init warper
     int w = 0;
     int h = 0;
     int i = 0;
-    for (auto& s : settings["screens"])
+    for (auto &s : settings["screens"])
     {
         w = max(w, s["size"][0].get<int>());
         h += s["size"][1].get<int>();
@@ -32,10 +31,10 @@ void ofApp::setup() {
         int hs = s["size"][1].get<int>();
 
         warper.push_back(ofxQuadWarp());
-        warper.back().setSourceRect(ofRectangle(0, 0, ws, hs));              // this is the source rectangle which is the size of the image and located at ( 0, 0 )
-        warper.back().setTopLeftCornerPosition(ofPoint(0, 0));             // this is position of the quad warp corners, centering the image on the screen.
-        warper.back().setTopRightCornerPosition(ofPoint(ws, 0));        // this is position of the quad warp corners, centering the image on the screen.
-        warper.back().setBottomLeftCornerPosition(ofPoint(0, hs));      // this is position of the quad warp corners, centering the image on the screen.
+        warper.back().setSourceRect(ofRectangle(0, 0, ws, hs));      // this is the source rectangle which is the size of the image and located at ( 0, 0 )
+        warper.back().setTopLeftCornerPosition(ofPoint(0, 0));       // this is position of the quad warp corners, centering the image on the screen.
+        warper.back().setTopRightCornerPosition(ofPoint(ws, 0));     // this is position of the quad warp corners, centering the image on the screen.
+        warper.back().setBottomLeftCornerPosition(ofPoint(0, hs));   // this is position of the quad warp corners, centering the image on the screen.
         warper.back().setBottomRightCornerPosition(ofPoint(ws, hs)); // this is position of the quad warp corners, centering the image on the screen.
         warper.back().setup();
         warper.back().disableKeyboardShortcuts();
@@ -44,7 +43,6 @@ void ofApp::setup() {
         warper.back().load(ofToString(i), "settings.json");
         ++i;
     }
-
 
     screen.allocate(w, h);
     screen.begin();
@@ -58,7 +56,6 @@ void ofApp::setup() {
 
     // load fonts
     fonts = Utils::loadFonts(settings["style"]["fonts"]);
-
 
     /*
     // add objects
@@ -96,6 +93,8 @@ void ofApp::setup() {
     cleanerSound.load(settings["graffitiEx"]["cleanerSound"]);
     */
 
+   catapultPos.push_back(ofVec2f());
+   catapultPos.push_back(ofVec2f());
 
     // init box 2d
     box2d.init();
@@ -115,64 +114,55 @@ void ofApp::update()
 {
 
     // network
+
     char udpMessage[100000];
     udpConnection.Receive(udpMessage, 100000);
     string message = udpMessage;
-    if (message != "") {
-        if (message[0] == 'X') {
-            catapultPos = ofToInt(message.substr(1, 3));
-        }else if (message[0] == 'Y') {
-            if (ofGetElapsedTimeMillis() - lastshot > 1000) {
-                lastshot = ofGetElapsedTimeMillis();
-                auto mSplit = ofSplitString(message,",");
-                auto force = ofToInt(mSplit[0].substr(1, 3));
-                cout << mSplit[1] << " " <<ofToInt(mSplit[1].substr(1, 3)) << endl;
-                currentColor = ofColor::fromHsb(ofToInt(mSplit[1].substr(0, 3)), 255, 255);
-                GameEventArgs ev;
-
-                if (ofRandom(1) <= settings["gameObjects"]["probabilitySpecialObjects"]) {
-                    ev.id = "special";
-                }
-                else {
-                    ev.id = "splash";
-                }
+    if (message != "")
+    {
+        if (message[0] == 'X')
+        {
+            catapultPos[ofToInt(message.substr(2, 1))-1].x = ofToInt(message.substr(4, 3));
+        }
+        else if (message[0] == 'Y')
+        {
+            catapultPos[ofToInt(message.substr(2, 1))-1].x = ofToInt(message.substr(4, 3));
+        }
+        else if (message[0] == 'S'){
+            int id = ofToInt(message.substr(2, 1))-1;
+            if (ofGetElapsedTimeMillis() - lastshot[id] > 200)
+            {
+                lastshot[id] = ofGetElapsedTimeMillis();
                 
-
-                ev.position = ofVec2f(
-                    ofMap(catapultPos, 0, 100,0, screen.getWidth()- settings["gameObjects"]["splash"]["sizeMin"]* screen.getWidth() ),
-                    ofMap(force, 55, 100, screen.getHeight(), 0));
-
-                //cout << mSplit[1] << endl;
-               // ev.position = ofVec2f(
-                //    screen.getWidth()*0.5,screen.getHeight()*0.5);
-
+                GameEventArgs ev;
+                ev.id = id;
+                ev.position = Utils::convertCatapultToScreenCoords(catapultPos[id],ofVec2f(screen.getWidth(),screen.getHeight()));
                 onGameEvent(ev);
             }
-            else {
-                //cout << "double" << endl;
-            }
-            
         }
+            
     }
 
     // box 2d
-    
+
     box2d.update();
 
     updateJoints();
-    if (state == IDLE) {
+    if (state == IDLE)
+    {
         updateIdle();
     }
-    else if (state == GAME) {
+    else if (state == GAME)
+    {
         updateGame();
     }
-    
 
     ofRemove(balls, ofxBox2dBaseShape::shouldRemoveOffScreen);
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void ofApp::draw()
+{
     ofBackground(0);
     ofSetColor(255);
 
@@ -184,62 +174,75 @@ void ofApp::draw() {
     case IDLE:
         drawIdle();
         break;
+    case START:
+        drawStart();
+        break;
     case GAME:
         drawGame();
         break;
     case FINISH:
+        drawFinish();
         break;
     default:
         break;
     }
 
-    
+    ofVec2f screenSize = ofVec2f(screen.getWidth(),screen.getHeight());
+    drawCrosshair(Utils::convertCatapultToScreenCoords(catapultPos[0],screenSize),
+        ofColor(settings["style"]["player"]["colors"][0][0].get<int>(),
+        settings["style"]["player"]["colors"][0][1].get<int>(),
+        settings["style"]["player"]["colors"][0][2].get<int>(),
+        settings["style"]["player"]["colors"][0][3].get<int>()));
+    drawCrosshair(Utils::convertCatapultToScreenCoords(catapultPos[1],screenSize),
+        ofColor(settings["style"]["player"]["colors"][1][0].get<int>(),
+        settings["style"]["player"]["colors"][1][1].get<int>(),
+        settings["style"]["player"]["colors"][1][2].get<int>(),
+        settings["style"]["player"]["colors"][1][3].get<int>()));
 
     screen.end();
-
 
     drawScreen(0);
 }
 
-void ofApp::drawWindow2(ofEventArgs& args)
+void ofApp::drawWindow2(ofEventArgs &args)
 {
     ofBackground(0);
     drawScreen(1);
 }
 
-void ofApp::keyPressedWindow2(ofKeyEventArgs& args)
+void ofApp::keyPressedWindow2(ofKeyEventArgs &args)
 {
     processKeyPressedEvent(args.key, 1);
 }
 
-void ofApp::keyPressedWindow3(ofKeyEventArgs& args)
+void ofApp::keyPressedWindow3(ofKeyEventArgs &args)
 {
     processKeyPressedEvent(args.key, 2);
 }
 
-void ofApp::keyPressedWindow4(ofKeyEventArgs& args)
+void ofApp::keyPressedWindow4(ofKeyEventArgs &args)
 {
     processKeyPressedEvent(args.key, 3);
 }
 
-void ofApp::drawWindow3(ofEventArgs& args)
+void ofApp::drawWindow3(ofEventArgs &args)
 {
     ofBackground(0);
     drawScreen(2);
 }
 
-void ofApp::drawWindow4(ofEventArgs& args)
+void ofApp::drawWindow4(ofEventArgs &args)
 {
     ofBackground(0);
     drawScreen(3);
 }
 
-void ofApp::exit() {
+void ofApp::exit()
+{
     for (size_t i = 0; i < warper.size(); i++)
     {
         warper[i].save(ofToString(i), "settings.json");
     }
-    
 }
 
 void ofApp::drawScreen(int screenId)
@@ -248,10 +251,9 @@ void ofApp::drawScreen(int screenId)
     int dy = 0;
     for (size_t i = 0; i < screenId; i++)
     {
-        dy += settings["screens"][i]["size"][1];
+        dy += settings["screens"][i]["size"][1].get<int>();
     }
 
-    
     //======================== get our quad warp matrix.
 
     ofMatrix4x4 mat = warper[screenId].getMatrix();
@@ -260,7 +262,7 @@ void ofApp::drawScreen(int screenId)
 
     ofPushMatrix();
     ofMultMatrix(mat);
-    
+
     ofSetColor(255);
     screen.getTexture().drawSubsection(
         ofRectangle(0, 0, settingsScreen["size"][0].get<int>(), settingsScreen["size"][1].get<int>()),
@@ -275,7 +277,8 @@ void ofApp::drawScreen(int screenId)
     ofSetLineWidth(2);
     ofSetColor(ofColor::cyan);
 
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 9; i++)
+    {
         int j = i + 1;
 
         ofVec3f p1 = mat.preMult(ofVec3f(points[i].x, points[i].y, 0));
@@ -301,85 +304,78 @@ void ofApp::drawScreen(int screenId)
 
 void ofApp::processKeyPressedEvent(int key, int screenId)
 {
-    if (key == 'h' || key == 'H') {
+    if (key == 'h' || key == 'H')
+    {
         for (size_t i = 0; i < warper.size(); i++)
         {
             warper[i].hide();
         }
     }
-    if (key == 'd' || key == 'D') {
+    if (key == 'd' || key == 'D')
+    {
         for (size_t i = 0; i < warper.size(); i++)
         {
-            if (i == screenId) {
+            if (i == screenId)
+            {
                 warper[i].enableKeyboardShortcuts();
                 warper[i].enableMouseControls();
                 warper[i].show();
             }
-            else {
+            else
+            {
                 warper[i].disableKeyboardShortcuts();
                 warper[i].disableMouseControls();
                 warper[i].hide();
             }
-            
         }
     }
 
-    if (key == 'l' || key == 'L') {
+    if (key == 'l' || key == 'L')
+    {
         for (size_t i = 0; i < warper.size(); i++)
         {
             warper[i].load(ofToString(i), "settings.json");
         }
     }
 
-    if (key == 's' || key == 'S') {
+    if (key == 's' || key == 'S')
+    {
         for (size_t i = 0; i < warper.size(); i++)
         {
             warper[i].save(ofToString(i), "settings.json");
         }
     }
-
-    if (key == 'p') {
-        currentColor.setHsb(ofRandom(255), 255, 255);
-        GameEventArgs e;
-        e.id = "splash";
-        e.position = ofVec2f(ofRandom(screen.getWidth()), ofRandom(screen.getHeight()));
-        onGameEvent(e);
-    }
-    if (key == 'b') {
-        currentColor.setHsb(ofRandom(255), 255, 255);
-        GameEventArgs e;
-        e.id = "splash";
-        e.position = ofVec2f(screen.getWidth()*0.5, 0.5*screen.getHeight());
-        onGameEvent(e);
-    }
-
-    if (key == 'o') {
-        GameEventArgs e;
-        e.id = "special";
-        e.position = ofVec2f(ofRandom(screen.getWidth()), ofRandom(screen.getHeight()));
-        onGameEvent(e);
-    }
-
 }
 
 //--------------------------------------------------------------
-void ofApp::keyPressed(int key) {
-    
-   
-  
+void ofApp::keyPressed(int key)
+{
+    processKeyPressedEvent(key,0);
 }
 
 void ofApp::mousePressed(int x, int y, int button)
 {
-    if (button > 1) button = 1;
-    createBall(x, y, button);
+    if (button > 1)
+        button = 1;
+    if (state != START && state != FINISH){
+        cout << state <<endl;
+        createBall(x, y, button);
+    }
+    
 }
 
-void ofApp::onGameEvent(GameEventArgs& ev)
+void ofApp::mouseMoved(int x, int y)
 {
-   
+    catapultPos[0] = ofVec2f(ofMap(x,0,screen.getWidth(),0,100),ofMap(y,0,screen.getHeight(),100,55));
 }
 
+
+void ofApp::onGameEvent(GameEventArgs &ev)
+{
+    if (state != START && state != FINISH){
+        createBall(ev.position.x,ev.position.y,ev.id);
+    };
+}
 
 ofTexture ofApp::loadTexture(string path)
 {
@@ -392,59 +388,68 @@ ofTexture ofApp::loadTexture(string path)
     return ret;
 }
 
-void ofApp::contactStart(ofxBox2dContactArgs& e)
+void ofApp::contactStart(ofxBox2dContactArgs &e)
 {
-    if (e.a != NULL && e.b != NULL) {
+    if (e.a != NULL && e.b != NULL)
+    {
         // get contacts data
-        EntityData* a = (EntityData*)e.a->GetBody()->GetUserData();
-        EntityData* b = (EntityData*)e.b->GetBody()->GetUserData();
+        EntityData *a = (EntityData *)e.a->GetBody()->GetUserData();
+        EntityData *b = (EntityData *)e.b->GetBody()->GetUserData();
 
         // check if both balls from the list
-        if (ofIsStringInString(a->id, "b") && ofIsStringInString(b->id, "b")) {
+        if (ofIsStringInString(a->id, "b") && ofIsStringInString(b->id, "b"))
+        {
 
             // check if one is anchored
             bool isAnchoredA = false;
             bool isAnchoredB = false;
 
-            JointData* jDataA;
-            JointData* jDataB;
+            JointData *jDataA;
+            JointData *jDataB;
 
-            for (auto& j : joints) {
-                auto* jd = (JointData*)j->joint->GetUserData();
-                if (jd->idBall == a->id) {
+            for (auto &j : joints)
+            {
+                auto *jd = (JointData *)j->joint->GetUserData();
+                if (jd->idBall == a->id)
+                {
                     isAnchoredA = true;
                     jDataA = jd;
                 }
-                else if (jd->idBall == b->id) {
+                else if (jd->idBall == b->id)
+                {
                     isAnchoredB = true;
                     jDataB = jd;
                 }
             }
 
             // apply forces
-            if (isAnchoredA) {
+            if (isAnchoredA)
+            {
                 jDataA->strenght -= e.b->GetBody()->GetMass() * e.b->GetBody()->GetLinearVelocity().Length();
-                if (jDataA->strenght <= 0) {
+                if (jDataA->strenght <= 0)
+                {
                     jointsToDelete.push_back(jDataA->id);
                 }
             }
-            if (isAnchoredB) {
+            if (isAnchoredB)
+            {
                 jDataB->strenght -= e.a->GetBody()->GetMass() * e.a->GetBody()->GetLinearVelocity().Length();
-                if (jDataB->strenght <= 0) {
+                if (jDataB->strenght <= 0)
+                {
                     jointsToDelete.push_back(jDataB->id);
                 }
             }
-
         }
     }
 }
 
-void ofApp::contactEnd(ofxBox2dContactArgs& e)
+void ofApp::contactEnd(ofxBox2dContactArgs &e)
 {
-    if (e.a != NULL && e.b != NULL) {
+    if (e.a != NULL && e.b != NULL)
+    {
         // get contacts data
-        EntityData* a = (EntityData*)e.a->GetBody()->GetUserData();
-        EntityData* b = (EntityData*)e.b->GetBody()->GetUserData();
+        EntityData *a = (EntityData *)e.a->GetBody()->GetUserData();
+        EntityData *b = (EntityData *)e.b->GetBody()->GetUserData();
 
         // check if anchor, and set anchor to a
         bool isAnchor = false;
@@ -455,23 +460,27 @@ void ofApp::contactEnd(ofxBox2dContactArgs& e)
         else if (b->type == "anchor")
         {
             isAnchor = true;
-            EntityData* t = a;
+            EntityData *t = a;
             a = b;
             b = t;
         }
 
         // if anchor check if anchor empty
-        if (isAnchor) {
+        if (isAnchor)
+        {
             bool isEmpty = true;
-            for (auto& j : joints) {
-                auto* jd = (JointData*)j->joint->GetUserData();
-                if (jd->idAnchor == a->id) {
+            for (auto &j : joints)
+            {
+                auto *jd = (JointData *)j->joint->GetUserData();
+                if (jd->idAnchor == a->id)
+                {
                     isEmpty = false;
                 }
             }
 
             // if empty create joint
-            if (isEmpty) {
+            if (isEmpty)
+            {
                 jointsToCreate.insert(make_pair(a->id, b->id));
             }
         }
@@ -487,16 +496,15 @@ void ofApp::createBall(int x, int y, int owner)
         settings["style"]["player"]["colors"][owner][0].get<int>(),
         settings["style"]["player"]["colors"][owner][1].get<int>(),
         settings["style"]["player"]["colors"][owner][2].get<int>(),
-        settings["style"]["player"]["colors"][owner][3].get<int>()
-    );
+        settings["style"]["player"]["colors"][owner][3].get<int>());
     c->setData(new EntityData());
-    auto* sd = (EntityData*)c->getData();
+    auto *sd = (EntityData *)c->getData();
     sd->id = "b" + ofToString(idCount);
     sd->type = "ball";
     sd->owner = owner;
 
-balls.push_back(c);
-++idCount;
+    balls.push_back(c);
+    ++idCount;
 }
 
 void ofApp::createAnchor(int x, int y)
@@ -505,7 +513,7 @@ void ofApp::createAnchor(int x, int y)
     c->setup(box2d.getWorld(), x, y, 30, true);
 
     c->setData(new EntityData());
-    auto* sd = (EntityData*)c->getData();
+    auto *sd = (EntityData *)c->getData();
     sd->id = "a" + ofToString(idCount);
     sd->type = "anchor";
 
@@ -517,50 +525,52 @@ void ofApp::updateJoints()
 {
     // delete destrye joints
     vector<int> toDel;
-    for (auto& id : jointsToDelete)
+    for (auto &id : jointsToDelete)
     {
         for (int i = joints.size() - 1; i >= 0; i--)
         {
 
-            auto* sd = (JointData*)joints[i]->joint->GetUserData();
-            if (id == sd->id) {
+            auto *sd = (JointData *)joints[i]->joint->GetUserData();
+            if (id == sd->id)
+            {
                 toDel.push_back(i);
             }
         }
     }
     std::reverse(toDel.begin(), toDel.end());
-    for (auto& index : toDel)
+    for (auto &index : toDel)
     {
         joints[index]->destroy();
         joints.erase(joints.begin() + index);
     }
 
-
     // create new joints
-    for (auto& p : jointsToCreate)
+    for (auto &p : jointsToCreate)
     {
         shared_ptr<ofxBox2dCircle> bAnchor;
         shared_ptr<ofxBox2dCircle> bBall;
 
-        for (auto& anchor : anchors)
+        for (auto &anchor : anchors)
         {
-            auto* sd = (EntityData*)anchor->getData();
-            if (sd->id == p.first) {
+            auto *sd = (EntityData *)anchor->getData();
+            if (sd->id == p.first)
+            {
                 bAnchor = anchor;
             }
         }
 
-        for (auto& ball : balls)
+        for (auto &ball : balls)
         {
-            auto* sd = (EntityData*)ball->getData();
-            if (sd->id == p.second) {
+            auto *sd = (EntityData *)ball->getData();
+            if (sd->id == p.second)
+            {
                 bBall = ball;
             }
         }
 
         auto j = make_shared<ofxBox2dJoint>(box2d.getWorld(), bAnchor->body, bBall->body);
         j->joint->SetUserData(new JointData());
-        auto* sd = (JointData*)j->joint->GetUserData();
+        auto *sd = (JointData *)j->joint->GetUserData();
         sd->idAnchor = p.first;
         sd->idBall = p.second;
         sd->id = "j" + ofToString(idCount);
@@ -578,121 +588,258 @@ void ofApp::setState(GameState newState)
     state = newState;
     tStateChanged = ofGetElapsedTimeMillis();
 
-    switch (state) {
-    case IDLE: {
+    switch (state)
+    {
+    case IDLE:
+    {
 
         clearWorld();
         createAnchor(ofGetWidth() * 0.35, ofGetHeight() * 0.5);
         createAnchor(ofGetWidth() * 0.7, ofGetHeight() * 0.5);
         break;
-        }
-    case GAME: {
+    }
+    case START:
+    {
         clearWorld();
-        for (auto& pos : settings["gameObjects"]["anchors"]) {
+        for (auto &pos : settings["gameObjects"]["anchors"])
+        {
             createAnchor(screen.getWidth() * pos[0].get<float>(), screen.getHeight() * pos[1].get<float>());
         }
         break;
     }
-   }
+    default:
+        break;
+    }
 }
-
 
 void ofApp::updateIdle()
 {
-    if (joints.size() == 2) {
+    if (joints.size() == 2)
+    {
         int nA = 0;
         int nB = 0;
-        for (auto& joint : joints)
+        for (auto &joint : joints)
         {
-            string idBall = ((JointData*)joint->joint->GetUserData())->idBall;
-            for (auto& ball : balls)
+            string idBall = ((JointData *)joint->joint->GetUserData())->idBall;
+            for (auto &ball : balls)
             {
-                if (((EntityData*)ball->getData())->id == idBall){
-                    int owner = ((EntityData*)ball->getData())->owner;
-                    if (owner == 0) {
+                if (((EntityData *)ball->getData())->id == idBall)
+                {
+                    int owner = ((EntityData *)ball->getData())->owner;
+                    if (owner == 0)
+                    {
                         nA++;
                     }
-                    else {
+                    else
+                    {
                         nB++;
                     }
                 }
-                
             }
         }
-        if (nA > 0 && nB > 0) {
-            setState(GAME);
+        if (nA > 0 && nB > 0)
+        {
+            setState(START);
         }
     }
 }
 
 void ofApp::updateGame()
 {
-    if (ofGetElapsedTimeMillis() - tStateChanged > settings["gameObjects"]["gameTime"].get<int>() * 1000) {
-        //end game
+    if (ofGetElapsedTimeMillis() - tStateChanged > settings["gameObjects"]["gameTime"].get<int>() * 1000)
+    {
+        // end game
         setState(FINISH);
+    }
+
+    // update score
+    scoreP1 = 0;
+    scoreP2 = 0;
+    for (auto &joint : joints)
+    {
+        string idBall = ((JointData *)joint->joint->GetUserData())->idBall;
+        for (auto &ball : balls)
+        {
+            auto *sd = (EntityData *)ball->getData();
+            if (idBall == sd->id)
+            {
+                sd->owner == 0 ? scoreP1++ : scoreP2++;
+            }
+        }
     }
 }
 
 void ofApp::drawPhysicsWorld()
 {
-    for (auto& joint : joints) {
+    for (auto &joint : joints)
+    {
         ofSetHexColor(0x444342);
         joint->draw();
     }
 
-    for (auto& anchor : anchors)
+    for (auto &anchor : anchors)
     {
-        anchor->draw();
+        bool isUsed = false;
+        string id = ((EntityData *)anchor->getData())->id;
+        for (auto &joint : joints)
+        {
+            string idBall = ((JointData *)joint->joint->GetUserData())->idAnchor;
+            if (id == idBall)
+            {
+                isUsed = true;
+            }
+        }
+        if (!isUsed)
+        {
+            anchor->draw();
+        }
     }
 
-
-    for (auto& circle : balls) {
-        auto* sd = (EntityData*)circle->getData();
+    for (auto &circle : balls)
+    {
+        auto *sd = (EntityData *)circle->getData();
         circle->draw();
     }
-
-    
 }
 
 void ofApp::drawIdle()
 {
-    
-    
+
     drawPhysicsWorld();
 
     ofSetColor(255);
-    fonts["head"]->drawString("Schm�cke die Gestecke", 155, 92);
+    fonts["head"]->drawString("Schmücke die Gestecke", 155, 92);
+}
+
+void ofApp::drawStart()
+{
+     drawPhysicsWorld();
+    
+    fonts["head"]->drawString("Wer am meisten schmückt,", 155, 92);
+    fonts["head"]->drawString("gewinnt!", 155, 150);
+
+    int t = 5000 - (ofGetElapsedTimeMillis() - tStateChanged);
+
+    if (t<1000){
+        fonts["timer"]->drawString("LOS!", 500, 700);
+    }
+    else if (t< 4000){
+        fonts["timer"]->drawString(ofToString((t/1000)), 500, 700);
+    }
+
+    if (ofGetElapsedTimeMillis() - tStateChanged > 5000)
+    {
+        setState(GAME);
+    }
+
 }
 
 void ofApp::drawGame()
 {
     drawPhysicsWorld();
 
-    int tLeft = (settings["gameObjects"]["gameTime"].get<int>() * 1000 - ofGetElapsedTimeMillis() - tStateChanged) / 1000;
+    // draw timer
+    int tLeft = (settings["gameObjects"]["gameTime"].get<int>() * 1000 - (ofGetElapsedTimeMillis() - tStateChanged)) / 1000;
     int t1 = tLeft / 60;
     int t2 = tLeft % 60;
     string timer = t1 < 10 ? "0" + ofToString(t1) : ofToString(t1);
     timer += ":";
     timer += t2 < 10 ? "0" + ofToString(t2) : ofToString(t2);
 
-    fonts["timer"]->drawString(timer, 155, 92);
+    int w = fonts["timer"]->getStringBoundingBox(timer, 0, 0).width;
+    fonts["timer"]->drawString(timer, 0.5 * (screen.getWidth() - w), 92);
+
+    // draw score
+    int scoreMax = anchors.size();
+
+    int hScore = 45;
+    int wMax = (0.9 * screen.getWidth() - w) * 0.5;
+    int absScore = scoreP1-scoreP2;
+    int y = 75;
+    
+    if (absScore > 0){
+    ofSetColor(
+            settings["style"]["player"]["colors"][0][0].get<int>(),
+            settings["style"]["player"]["colors"][0][1].get<int>(),
+            settings["style"]["player"]["colors"][0][2].get<int>(),
+            settings["style"]["player"]["colors"][0][3].get<int>());
+
+        int w0 = wMax / scoreMax * absScore;
+        ofDrawRectangle((screen.getWidth() - w) * 0.5 - w0, y, w0, hScore);
+    }else{
+    ofSetColor(
+            settings["style"]["player"]["colors"][1][0].get<int>(),
+            settings["style"]["player"]["colors"][1][1].get<int>(),
+            settings["style"]["player"]["colors"][1][2].get<int>(),
+            settings["style"]["player"]["colors"][1][3].get<int>());
+        int w1 = wMax / scoreMax * abs(absScore);
+        ofDrawRectangle((screen.getWidth() + w) * 0.5, y, w1, hScore);
+    }
+
+   
+}
+
+void ofApp::drawFinish()
+{
+    int x = 300;
+    int y = 300;
+    int dy = 300;
+    if(scoreP1 > scoreP2){
+        fonts["head"]->drawString("Spieler", x,y);     
+        ofSetColor(
+            settings["style"]["player"]["colors"][0][0].get<int>(),
+            settings["style"]["player"]["colors"][0][1].get<int>(),
+            settings["style"]["player"]["colors"][0][2].get<int>(),
+            settings["style"]["player"]["colors"][0][3].get<int>());
+        fonts["timer"]->drawString("rot", x,y+dy); 
+        ofSetColor(255);
+        fonts["head"]->drawString("gewinnt!", x,y+dy); 
+    }else if(scoreP1 < scoreP2){
+        fonts["head"]->drawString("Spieler", x,y);     
+        ofSetColor(
+            settings["style"]["player"]["colors"][1][0].get<int>(),
+            settings["style"]["player"]["colors"][1][1].get<int>(),
+            settings["style"]["player"]["colors"][1][2].get<int>(),
+            settings["style"]["player"]["colors"][1][3].get<int>());
+        fonts["timer"]->drawString("gold", x,y+dy); 
+        ofSetColor(255);
+        fonts["head"]->drawString("gewinnt!", x,y+dy); 
+    }else{
+        fonts["head"]->drawString("Unentschieden!", x,y+dy); 
+    }
+    
+     if (ofGetElapsedTimeMillis() - tStateChanged > 5000)
+    {
+        setState(IDLE);
+    }
 }
 
 void ofApp::clearWorld()
 {
-    for (auto& ball:balls)
+    for (auto &ball : balls)
     {
         ball->destroy();
     }
-    for (auto& anchor : anchors) {
+    for (auto &anchor : anchors)
+    {
         anchor->destroy();
     }
     /*for (auto& joint : joints) {
         joint->destroy();
     }*/
-    
 
     balls.clear();
     joints.clear();
     anchors.clear();
+}
+
+void ofApp::drawCrosshair(ofVec2f pos, ofColor color)
+{
+    ofPushStyle();
+    ofPushMatrix();
+    ofSetColor(color);
+    ofTranslate(pos);
+    ofDrawCircle(0,0,5);
+    ofPopMatrix();
+    ofPopStyle();
 }

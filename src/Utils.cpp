@@ -17,4 +17,10 @@ namespace Utils {
 		ret->load(des["font"].get<string>(), des["size"].get<int>(), true, true);
 		return ret;
 	}
+
+	ofVec2f convertCatapultToScreenCoords(ofVec2f v, ofVec2f screenSize){
+		return ofVec2f(
+                    ofMap(v.x, 0, 100, 0, screenSize.x),
+                    ofMap(v.y, 55, 100, screenSize.y, 0));
+	}
 }

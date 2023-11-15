@@ -42,7 +42,7 @@
                 0.45
             ]
         ],
-        "gameTime": 90
+        "gameTime": 10
     },
     "network": {
         "port": 8888
@@ -52,7 +52,7 @@
             "dst": [
                 {
                     "x": 0.0,
-                    "y": 0.0
+                    "y": 2.0
                 },
                 {
                     "x": 1080.0,
@@ -121,7 +121,7 @@
                     0
                 ],
                 "font": "fonts/BerkshireSwash-Regular.ttf",
-                "size": 100
+                "size": 200
             }
         },
         "player": {

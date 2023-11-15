@@ -1,4 +1,8 @@
 ofxBox2d
+ofxBox2d
+ofxNetwork
 ofxNetwork
 ofxOpenCv
+ofxOpenCv
+ofxQuadWarp
 ofxQuadWarp

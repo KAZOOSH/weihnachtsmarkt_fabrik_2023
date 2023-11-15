@@ -8,6 +8,7 @@ public:
 
     void draw();
 
+
     ofColor color = ofColor(200);
     int nDots = 20;
     int rDots = 2;
