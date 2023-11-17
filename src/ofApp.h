@@ -21,6 +21,8 @@ struct PlayerData{
     ofColor color;
     int score;
     BallEvent nextBall = NORMAL;
+    ofTexture texNextBall;
+    ofVec2f posTexNextBall;
 };
 
 class EntityData {
@@ -85,7 +87,7 @@ public:
     void updateJoints();
 
     void setState(GameState newState);
-
+    void setNextBall(BallEvent ev);
 
     void updateIdle();
     void updateGame();

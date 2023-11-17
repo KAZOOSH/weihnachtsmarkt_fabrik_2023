@@ -25,3 +25,5 @@ bin/*.dll
 *.rc
 Makefile
 config.make
+*.so
+bin/weihnachtsmarkt_fabrik_2023_debug

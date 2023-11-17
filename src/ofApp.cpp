@@ -68,7 +68,8 @@ void ofApp::setup()
             settings["style"]["player"]["colors"][1][1].get<int>(),
             settings["style"]["player"]["colors"][1][2].get<int>(),
             settings["style"]["player"]["colors"][1][3].get<int>());
-
+    player[0].posTexNextBall = ofVec2f(30,30);
+    player[1].posTexNextBall = ofVec2f(screen.getWidth()- 30 - 128,30);
 
     ballEvMapping.insert(make_pair(NORMAL,"normal"));
     ballEvMapping.insert(make_pair(HUGE_BALL,"hugeBall"));
@@ -354,7 +355,7 @@ void ofApp::processKeyPressedEvent(int key, int screenId)
     }
     if (key == 'b')
     {
-        player[0].nextBall = HUGE_BALL;
+        setNextBall(HUGE_BALL);
     }
 }
 
@@ -514,6 +515,7 @@ void ofApp::createBall(int x, int y, int owner)
     ++idCount;
 
     player[owner].nextBall = NORMAL;
+    player[owner].texNextBall = ofTexture();
 }
 
 void ofApp::createAnchor(int x, int y)
@@ -618,6 +620,14 @@ void ofApp::setState(GameState newState)
     }
     default:
         break;
+    }
+}
+
+void ofApp::setNextBall(BallEvent ev)
+{
+    for(auto& p:player){
+        p.nextBall = ev;
+        p.texNextBall = loadTexture(settings["gameObjects"]["balls"][ballEvMapping[ev]]["icon"].get<string>());
     }
 }
 
@@ -777,7 +787,9 @@ void ofApp::drawGame()
         ofDrawRectangle((screen.getWidth() + w) * 0.5, y, w1, hScore);
     }
 
-   
+   for(auto& p:player){
+    p.texNextBall.draw(p.posTexNextBall);
+   }
 }
 
 void ofApp::drawFinish()
