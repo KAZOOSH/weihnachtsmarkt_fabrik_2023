@@ -57,6 +57,22 @@ void ofApp::setup()
     // load fonts
     fonts = Utils::loadFonts(settings["style"]["fonts"]);
 
+    // init player
+    player.push_back(PlayerData());
+    player.push_back(PlayerData());
+    player[0].color = ofColor(settings["style"]["player"]["colors"][0][0].get<int>(),
+            settings["style"]["player"]["colors"][0][1].get<int>(),
+            settings["style"]["player"]["colors"][0][2].get<int>(),
+            settings["style"]["player"]["colors"][0][3].get<int>());
+    player[1].color = ofColor(settings["style"]["player"]["colors"][1][0].get<int>(),
+            settings["style"]["player"]["colors"][1][1].get<int>(),
+            settings["style"]["player"]["colors"][1][2].get<int>(),
+            settings["style"]["player"]["colors"][1][3].get<int>());
+
+
+    ballEvMapping.insert(make_pair(NORMAL,"normal"));
+    ballEvMapping.insert(make_pair(HUGE_BALL,"hugeBall"));
+    ballEvMapping.insert(make_pair(TINY_BALL,"tinyBall"));
     /*
     // add objects
     splash.minSize = settings["gameObjects"]["splash"]["sizeMin"];
@@ -93,9 +109,6 @@ void ofApp::setup()
     cleanerSound.load(settings["graffitiEx"]["cleanerSound"]);
     */
 
-   catapultPos.push_back(ofVec2f());
-   catapultPos.push_back(ofVec2f());
-
     // init box 2d
     box2d.init();
     box2d.setGravity(0, 9.81);
@@ -122,21 +135,21 @@ void ofApp::update()
     {
         if (message[0] == 'X')
         {
-            catapultPos[ofToInt(message.substr(2, 1))-1].x = ofToInt(message.substr(4, 3));
+            player[ofToInt(message.substr(2, 1))-1].catapultPos.x = ofToInt(message.substr(4, 3));
         }
         else if (message[0] == 'Y')
         {
-            catapultPos[ofToInt(message.substr(2, 1))-1].x = ofToInt(message.substr(4, 3));
+            player[ofToInt(message.substr(2, 1))-1].catapultPos.x = ofToInt(message.substr(4, 3));
         }
         else if (message[0] == 'S'){
             int id = ofToInt(message.substr(2, 1))-1;
-            if (ofGetElapsedTimeMillis() - lastshot[id] > 200)
+            if (ofGetElapsedTimeMillis() - player[id].lastShot > 200)
             {
-                lastshot[id] = ofGetElapsedTimeMillis();
+                player[id].lastShot = ofGetElapsedTimeMillis();
                 
                 GameEventArgs ev;
                 ev.id = id;
-                ev.position = Utils::convertCatapultToScreenCoords(catapultPos[id],ofVec2f(screen.getWidth(),screen.getHeight()));
+                ev.position = Utils::convertCatapultToScreenCoords(player[id].catapultPos,ofVec2f(screen.getWidth(),screen.getHeight()));
                 onGameEvent(ev);
             }
         }
@@ -188,16 +201,10 @@ void ofApp::draw()
     }
 
     ofVec2f screenSize = ofVec2f(screen.getWidth(),screen.getHeight());
-    drawCrosshair(Utils::convertCatapultToScreenCoords(catapultPos[0],screenSize),
-        ofColor(settings["style"]["player"]["colors"][0][0].get<int>(),
-        settings["style"]["player"]["colors"][0][1].get<int>(),
-        settings["style"]["player"]["colors"][0][2].get<int>(),
-        settings["style"]["player"]["colors"][0][3].get<int>()));
-    drawCrosshair(Utils::convertCatapultToScreenCoords(catapultPos[1],screenSize),
-        ofColor(settings["style"]["player"]["colors"][1][0].get<int>(),
-        settings["style"]["player"]["colors"][1][1].get<int>(),
-        settings["style"]["player"]["colors"][1][2].get<int>(),
-        settings["style"]["player"]["colors"][1][3].get<int>()));
+    drawCrosshair(Utils::convertCatapultToScreenCoords(player[0].catapultPos,screenSize),
+        player[0].color);
+    drawCrosshair(Utils::convertCatapultToScreenCoords(player[1].catapultPos,screenSize),
+        player[1].color);
 
     screen.end();
 
@@ -345,6 +352,10 @@ void ofApp::processKeyPressedEvent(int key, int screenId)
             warper[i].save(ofToString(i), "settings.json");
         }
     }
+    if (key == 'b')
+    {
+        player[0].nextBall = HUGE_BALL;
+    }
 }
 
 //--------------------------------------------------------------
@@ -358,7 +369,6 @@ void ofApp::mousePressed(int x, int y, int button)
     if (button > 1)
         button = 1;
     if (state != START && state != FINISH){
-        cout << state <<endl;
         createBall(x, y, button);
     }
     
@@ -366,7 +376,7 @@ void ofApp::mousePressed(int x, int y, int button)
 
 void ofApp::mouseMoved(int x, int y)
 {
-    catapultPos[0] = ofVec2f(ofMap(x,0,screen.getWidth(),0,100),ofMap(y,0,screen.getHeight(),100,55));
+    player[0].catapultPos = ofVec2f(ofMap(x,0,screen.getWidth(),0,100),ofMap(y,0,screen.getHeight(),100,55));
 }
 
 
@@ -490,13 +500,10 @@ void ofApp::contactEnd(ofxBox2dContactArgs &e)
 void ofApp::createBall(int x, int y, int owner)
 {
     auto c = std::make_shared<ElemBall>();
-    c->setPhysics(1, 0.5, 0.9);
-    c->setup(box2d.getWorld(), x, y, ofRandom(20, 50));
-    c->color = ofColor(
-        settings["style"]["player"]["colors"][owner][0].get<int>(),
-        settings["style"]["player"]["colors"][owner][1].get<int>(),
-        settings["style"]["player"]["colors"][owner][2].get<int>(),
-        settings["style"]["player"]["colors"][owner][3].get<int>());
+    auto vals = settings["gameObjects"]["balls"][ballEvMapping[player[owner].nextBall]];
+    c->setPhysics(vals["density"], vals["bounce"], vals["friction"]);
+    c->setup(box2d.getWorld(), x, y, ofRandom(vals["radius"][0], vals["radius"][1]));
+    c->color = player[owner].color;
     c->setData(new EntityData());
     auto *sd = (EntityData *)c->getData();
     sd->id = "b" + ofToString(idCount);
@@ -505,6 +512,8 @@ void ofApp::createBall(int x, int y, int owner)
 
     balls.push_back(c);
     ++idCount;
+
+    player[owner].nextBall = NORMAL;
 }
 
 void ofApp::createAnchor(int x, int y)
@@ -653,8 +662,8 @@ void ofApp::updateGame()
     }
 
     // update score
-    scoreP1 = 0;
-    scoreP2 = 0;
+    player[0].score = 0;
+    player[1].score = 0;
     for (auto &joint : joints)
     {
         string idBall = ((JointData *)joint->joint->GetUserData())->idBall;
@@ -663,7 +672,7 @@ void ofApp::updateGame()
             auto *sd = (EntityData *)ball->getData();
             if (idBall == sd->id)
             {
-                sd->owner == 0 ? scoreP1++ : scoreP2++;
+                sd->owner == 0 ? player[0].score++ : player[1].score++;
             }
         }
     }
@@ -754,24 +763,16 @@ void ofApp::drawGame()
 
     int hScore = 45;
     int wMax = (0.9 * screen.getWidth() - w) * 0.5;
-    int absScore = scoreP1-scoreP2;
+    int absScore = player[0].score-player[1].score;
     int y = 75;
     
     if (absScore > 0){
-    ofSetColor(
-            settings["style"]["player"]["colors"][0][0].get<int>(),
-            settings["style"]["player"]["colors"][0][1].get<int>(),
-            settings["style"]["player"]["colors"][0][2].get<int>(),
-            settings["style"]["player"]["colors"][0][3].get<int>());
+    ofSetColor(player[0].color);
 
         int w0 = wMax / scoreMax * absScore;
         ofDrawRectangle((screen.getWidth() - w) * 0.5 - w0, y, w0, hScore);
     }else{
-    ofSetColor(
-            settings["style"]["player"]["colors"][1][0].get<int>(),
-            settings["style"]["player"]["colors"][1][1].get<int>(),
-            settings["style"]["player"]["colors"][1][2].get<int>(),
-            settings["style"]["player"]["colors"][1][3].get<int>());
+    ofSetColor(player[1].color);
         int w1 = wMax / scoreMax * abs(absScore);
         ofDrawRectangle((screen.getWidth() + w) * 0.5, y, w1, hScore);
     }
@@ -784,23 +785,15 @@ void ofApp::drawFinish()
     int x = 300;
     int y = 300;
     int dy = 300;
-    if(scoreP1 > scoreP2){
+    if(player[0].score > player[1].score){
         fonts["head"]->drawString("Spieler", x,y);     
-        ofSetColor(
-            settings["style"]["player"]["colors"][0][0].get<int>(),
-            settings["style"]["player"]["colors"][0][1].get<int>(),
-            settings["style"]["player"]["colors"][0][2].get<int>(),
-            settings["style"]["player"]["colors"][0][3].get<int>());
+        ofSetColor(player[0].color);
         fonts["timer"]->drawString("rot", x,y+dy); 
         ofSetColor(255);
         fonts["head"]->drawString("gewinnt!", x,y+dy); 
-    }else if(scoreP1 < scoreP2){
+    }else if(player[0].score < player[1].score){
         fonts["head"]->drawString("Spieler", x,y);     
-        ofSetColor(
-            settings["style"]["player"]["colors"][1][0].get<int>(),
-            settings["style"]["player"]["colors"][1][1].get<int>(),
-            settings["style"]["player"]["colors"][1][2].get<int>(),
-            settings["style"]["player"]["colors"][1][3].get<int>());
+        ofSetColor(player[1].color);
         fonts["timer"]->drawString("gold", x,y+dy); 
         ofSetColor(255);
         fonts["head"]->drawString("gewinnt!", x,y+dy); 

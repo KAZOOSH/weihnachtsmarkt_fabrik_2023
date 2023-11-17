@@ -8,6 +8,21 @@
 #include "ElemBall.h"
 #include "Utils.h"
 
+enum BallEvent{
+    NORMAL,
+    HUGE_BALL,
+    TINY_BALL,
+    MULTI_BALL
+};
+
+struct PlayerData{
+    long lastShot = 0;
+    ofVec2f catapultPos;
+    ofColor color;
+    int score;
+    BallEvent nextBall = NORMAL;
+};
+
 class EntityData {
 public:
     string id = "none";
@@ -34,6 +49,8 @@ enum GameState {
     GAME,
     FINISH
 };
+
+
 
 
 class ofApp : public ofBaseApp {
@@ -96,20 +113,16 @@ public:
 
     ofPoint points[10];
 
-
-    //catapult 
-    vector<ofVec2f> catapultPos;
+    vector<PlayerData> player;
 
     int nElems = 0;
-
-    vector<long> lastshot = {0,0};
 
 
     // game
     GameState state = IDLE;
+    map<BallEvent,string> ballEvMapping;
     long tStateChanged = 0;
-    int scoreP1 = 0;
-    int scoreP2 = 0;
+   
 
     // graphics
     map<string, shared_ptr<ofTrueTypeFont>> fonts;
