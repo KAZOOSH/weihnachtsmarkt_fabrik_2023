@@ -15,6 +15,12 @@ enum BallEvent{
     MULTI_BALL
 };
 
+enum WorldEvent{
+    NORMAL,
+    WIND,
+    INVERSE_GRAVITY
+};
+
 struct PlayerData{
     long lastShot = 0;
     ofVec2f catapultPos;
@@ -123,6 +129,7 @@ public:
     // game
     GameState state = IDLE;
     map<BallEvent,string> ballEvMapping;
+    map<BallEvent,string> worldEvMapping;
     long tStateChanged = 0;
    
 

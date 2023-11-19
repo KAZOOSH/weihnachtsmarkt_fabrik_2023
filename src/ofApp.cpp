@@ -74,6 +74,11 @@ void ofApp::setup()
     ballEvMapping.insert(make_pair(NORMAL,"normal"));
     ballEvMapping.insert(make_pair(HUGE_BALL,"hugeBall"));
     ballEvMapping.insert(make_pair(TINY_BALL,"tinyBall"));
+
+    worldEvMapping.insert(make_pair(NORMAL,"normal"));
+    worldEvMapping.insert(make_pair(INVERSE_GRAVITY,"inverseGravity"));
+    worldEvMapping.insert(make_pair(WIND,"wind"));
+
     /*
     // add objects
     splash.minSize = settings["gameObjects"]["splash"]["sizeMin"];
@@ -540,7 +545,6 @@ void ofApp::updateJoints()
     {
         for (int i = joints.size() - 1; i >= 0; i--)
         {
-
             auto *sd = (JointData *)joints[i]->joint->GetUserData();
             if (id == sd->id)
             {
