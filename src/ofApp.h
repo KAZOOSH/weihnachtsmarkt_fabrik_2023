@@ -16,7 +16,7 @@ enum BallEvent{
 };
 
 enum WorldEvent{
-    NORMAL,
+    NORMAL_WORLD,
     WIND,
     INVERSE_GRAVITY
 };
@@ -29,6 +29,18 @@ struct PlayerData{
     BallEvent nextBall = NORMAL;
     ofTexture texNextBall;
     ofVec2f posTexNextBall;
+};
+
+struct TextData {
+    string content = "none";
+    string font = "none";
+    float textLen = 0.f;
+    int r = 255,
+        g = 255,
+        b = 255,
+        a = 255;
+    int x = 0,
+        y = 0;
 };
 
 class EntityData {
@@ -66,8 +78,10 @@ class ofApp : public ofBaseApp {
 public:
 		
     void setup();
+    void setupTexts();
     void update();
     void draw();
+    void drawText(string textID);
     void drawWindow2(ofEventArgs& args);
     void drawWindow3(ofEventArgs& args);
     void drawWindow4(ofEventArgs& args);
@@ -135,6 +149,12 @@ public:
 
     // graphics
     map<string, shared_ptr<ofTrueTypeFont>> fonts;
+    map<string, TextData> textData;
+
+    
+    ofTrueTypeFont font;    
+    float textLen;
+    int testNum = 0;
 
     // box 2d
     ofxBox2d                                    box2d;			  //	the box2d world

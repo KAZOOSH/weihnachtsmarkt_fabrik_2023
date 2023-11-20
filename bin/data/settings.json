@@ -64,7 +64,7 @@
                 ]
             }
         },
-        "gameTime": 30
+        "gameTime": 5
     },
     "network": {
         "port": 8888
@@ -163,20 +163,140 @@
             ]
         },
         "text": {
+            "finishDraw": {
+                "align": "center",
+                "color": [
+                    255,
+                    0,
+                    0,
+                    255
+                ],
+                "font": "head",
+                "pos": [
+                    155,
+                    150
+                ],
+                "text": "Unentschieden!"
+            },
+            "finishGold": {
+                "align": "center",
+                "color": [
+                    212,
+                    175,
+                    55,
+                    255
+                ],
+                "font": "head",
+                "pos": [
+                    155,
+                    500
+                ],
+                "text": "GOLD"
+            },
+            "finishPlayer": {
+                "align": "center",
+                "color": [
+                    255,
+                    0,
+                    0,
+                    255
+                ],
+                "font": "head",
+                "pos": [
+                    155,
+                    300
+                ],
+                "text": "Spieler"
+            },
+            "finishRot": {
+                "align": "center",
+                "color": [
+                    235,
+                    51,
+                    35,
+                    255
+                ],
+                "font": "head",
+                "pos": [
+                    155,
+                    500
+                ],
+                "text": "ROT"
+            },
+            "finishWins": {
+                "align": "center",
+                "color": [
+                    255,
+                    0,
+                    0,
+                    255
+                ],
+                "font": "head",
+                "pos": [
+                    155,
+                    700
+                ],
+                "text": "gewinnt!"
+            },
             "idleTitle": {
                 "align": "center",
                 "color": [
                     255,
+                    255,
+                    0,
+                    255
+                ],
+                "font": "head",
+                "pos": [
+                    155,
+                    92
+                ],
+                "text": "Schmückt den Baum!"
+            },
+            "startLos": {
+                "align": "center",
+                "color": [
+                    0,
+                    255,
+                    255,
+                    255
+                ],
+                "font": "timer",
+                "pos": [
+                    155,
+                    700
+                ],
+                "text": "LOS!"
+            },
+            "startTitle1": {
+                "align": "center",
+                "color": [
+                    255,
+                    0,
+                    0,
+                    255
+                ],
+                "font": "head",
+                "pos": [
+                    155,
+                    92
+                ],
+                "text": "Wer am meisten schmückt,"
+            },
+            "startTitle2": {
+                "align": "center",
+                "color": [
+                    0,
                     255,
                     255,
                     255
                 ],
                 "font": "head",
                 "pos": [
-                    50,
-                    50
+                    155,
+                    150
                 ],
-                "text": "Schmückt den Baum"
+                "text": "gewinnt!"
             }
         }
     }
