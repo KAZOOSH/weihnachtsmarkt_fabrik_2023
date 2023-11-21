@@ -56,6 +56,7 @@ void ofApp::setup()
 
     // load fonts
     fonts = Utils::loadFonts(settings["style"]["fonts"]);
+    setupTexts();
 
     // init player
     player.push_back(PlayerData());
@@ -74,11 +75,6 @@ void ofApp::setup()
     ballEvMapping.insert(make_pair(NORMAL,"normal"));
     ballEvMapping.insert(make_pair(HUGE_BALL,"hugeBall"));
     ballEvMapping.insert(make_pair(TINY_BALL,"tinyBall"));
-
-    worldEvMapping.insert(make_pair(NORMAL,"normal"));
-    worldEvMapping.insert(make_pair(INVERSE_GRAVITY,"inverseGravity"));
-    worldEvMapping.insert(make_pair(WIND,"wind"));
-
     /*
     // add objects
     splash.minSize = settings["gameObjects"]["splash"]["sizeMin"];
@@ -545,6 +541,7 @@ void ofApp::updateJoints()
     {
         for (int i = joints.size() - 1; i >= 0; i--)
         {
+
             auto *sd = (JointData *)joints[i]->joint->GetUserData();
             if (id == sd->id)
             {
@@ -725,26 +722,70 @@ void ofApp::drawPhysicsWorld()
     }
 }
 
-void ofApp::drawIdle()
+void ofApp::setupTexts()
 {
 
-    drawPhysicsWorld();
+    TextData data;
 
-    ofSetColor(255);
-    fonts["head"]->drawString("Schmücke die Gestecke", 155, 92);
+    for (auto &text : settings["style"]["text"].items())
+    {
+        
+        font.load(settings["style"]["fonts"][text.value()["font"]]["font"], settings["style"]["fonts"][text.value()["font"]]["size"]);
+        textLen = font.stringWidth(text.value()["text"]);
+
+        data.content = text.value()["text"];
+        data.font = text.value()["font"];
+        data.textLen = textLen;
+        
+        if (text.value()["align"] == "center") {
+            data.x = (screen.getWidth() - textLen) / 2;
+        }
+        else {
+            data.x = text.value()["pos"][0];
+        }        
+        data.y = text.value()["pos"][1];
+
+        
+        if (text.value().contains("color")) {
+            data.r = text.value()["color"][0];
+            data.g = text.value()["color"][1];
+            data.b = text.value()["color"][2];
+            data.a = text.value()["color"][3];
+        }
+               
+        textData.emplace(text.key(), data);
+
+        //cout << text << endl;
+        
+    }    
+}
+
+void ofApp::drawText(string textID) 
+{
+    ofSetColor(textData[textID].r, textData[textID].g, textData[textID].b, textData[textID].a);
+    fonts[textData[textID].font]->drawString(textData[textID].content, textData[textID].x, textData[textID].y);
+}
+
+void ofApp::drawIdle()
+{
+    drawPhysicsWorld();  
+    drawText("idleTitle");    
 }
 
 void ofApp::drawStart()
 {
      drawPhysicsWorld();
     
-    fonts["head"]->drawString("Wer am meisten schmückt,", 155, 92);
-    fonts["head"]->drawString("gewinnt!", 155, 150);
+     drawText("startTitle1");
+     drawText("startTitle2");
+
+     //fonts["head"]->drawString("Wer am meisten schmückt,", 155, 92);
+    //fonts["head"]->drawString("gewinnt!", 155, 150);
 
     int t = 5000 - (ofGetElapsedTimeMillis() - tStateChanged);
 
     if (t<1000){
-        fonts["timer"]->drawString("LOS!", 500, 700);
+        drawText("startLos");
     }
     else if (t< 4000){
         fonts["timer"]->drawString(ofToString((t/1000)), 500, 700);
@@ -798,23 +839,17 @@ void ofApp::drawGame()
 
 void ofApp::drawFinish()
 {
-    int x = 300;
-    int y = 300;
-    int dy = 300;
     if(player[0].score > player[1].score){
-        fonts["head"]->drawString("Spieler", x,y);     
-        ofSetColor(player[0].color);
-        fonts["timer"]->drawString("rot", x,y+dy); 
-        ofSetColor(255);
-        fonts["head"]->drawString("gewinnt!", x,y+dy); 
+        drawText("finishPlayer");
+        drawText("finishRot");
+        drawText("finishWins");
+                 
     }else if(player[0].score < player[1].score){
-        fonts["head"]->drawString("Spieler", x,y);     
-        ofSetColor(player[1].color);
-        fonts["timer"]->drawString("gold", x,y+dy); 
-        ofSetColor(255);
-        fonts["head"]->drawString("gewinnt!", x,y+dy); 
+        drawText("finishPlayer");
+        drawText("finishGold");
+        drawText("finishWins");
     }else{
-        fonts["head"]->drawString("Unentschieden!", x,y+dy); 
+        drawText("finishDraw");
     }
     
      if (ofGetElapsedTimeMillis() - tStateChanged > 5000)
