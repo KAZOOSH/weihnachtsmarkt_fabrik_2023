@@ -108,9 +108,12 @@ public:
 
     void setState(GameState newState);
     void setNextBall(BallEvent ev);
+    void setNextWorldEvent(WorldEvent ev);
 
     void updateIdle();
     void updateGame();
+
+    void updateWorldEvent();
 
     void drawPhysicsWorld();
     void drawIdle();
@@ -119,6 +122,10 @@ public:
     void drawFinish();
 
     void clearWorld();
+
+    void onNextSpecialEvent();
+    void refreshWorldEvents();
+    void refreshBallEvents();
 
     void drawCrosshair(ofVec2f pos, ofColor color);
 
@@ -143,8 +150,16 @@ public:
     // game
     GameState state = IDLE;
     map<BallEvent,string> ballEvMapping;
-    map<BallEvent,string> worldEvMapping;
+    map<WorldEvent,string> worldEvMapping;
     long tStateChanged = 0;
+
+    WorldEvent currentWorldEvent = NORMAL_WORLD;
+    long tWorldEvent = 0;
+    ofTexture worldEventTexture;
+    ofVec2f worldEventTexturePos;
+    long tBallEvent = 0;
+    vector<BallEvent> ballEventList;
+    vector<WorldEvent> worldEventList;
    
 
     // graphics

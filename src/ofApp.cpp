@@ -75,6 +75,11 @@ void ofApp::setup()
     ballEvMapping.insert(make_pair(NORMAL,"normal"));
     ballEvMapping.insert(make_pair(HUGE_BALL,"hugeBall"));
     ballEvMapping.insert(make_pair(TINY_BALL,"tinyBall"));
+    ballEvMapping.insert(make_pair(MULTI_BALL,"multiBall"));
+
+    worldEvMapping.insert(make_pair(NORMAL_WORLD,"normal"));
+    worldEvMapping.insert(make_pair(INVERSE_GRAVITY,"inverseGravity"));
+    worldEvMapping.insert(make_pair(WIND,"wind"));
     /*
     // add objects
     splash.minSize = settings["gameObjects"]["splash"]["sizeMin"];
@@ -356,7 +361,8 @@ void ofApp::processKeyPressedEvent(int key, int screenId)
     }
     if (key == 'b')
     {
-        setNextBall(HUGE_BALL);
+        setNextWorldEvent(INVERSE_GRAVITY);
+        //setNextBall(MULTI_BALL);
     }
 }
 
@@ -511,9 +517,48 @@ void ofApp::createBall(int x, int y, int owner)
     sd->id = "b" + ofToString(idCount);
     sd->type = "ball";
     sd->owner = owner;
-
     balls.push_back(c);
     ++idCount;
+
+    if (player[owner].nextBall == MULTI_BALL){
+        for (size_t i = 0; i < 2; i++)
+        {
+            auto c = std::make_shared<ElemBall>();
+            auto vals = settings["gameObjects"]["balls"][ballEvMapping[player[owner].nextBall]];
+            c->setPhysics(vals["density"], vals["bounce"], vals["friction"]);
+            c->setup(box2d.getWorld(), x +((i+1)%2)* vals["radius"][1].get<float>()*1.3, y+(i%2)* vals["radius"][1].get<float>()*1.3, ofRandom(vals["radius"][0], vals["radius"][1]));
+            c->color = player[owner].color;
+            c->setData(new EntityData());
+            auto *sd = (EntityData *)c->getData();
+            sd->id = "b" + ofToString(idCount);
+            sd->type = "ball";
+            sd->owner = owner;
+            balls.push_back(c);
+            ++idCount;
+        }
+        for (size_t i = balls.size()-2; i < balls.size(); i++)
+        {
+            int t = i+1;
+            if(t == balls.size()){
+                t = balls.size()-2;
+            }
+            auto j = make_shared<ofxBox2dJoint>(box2d.getWorld(), balls[i]->body, balls[t]->body);
+            j->joint->SetUserData(new JointData());
+            /*auto *sd = (JointData *)j->joint->GetUserData();
+            sd->idAnchor = p.first;
+            sd->idBall = p.second;
+            sd->id = "j" + ofToString(idCount);
+            ++idCount;*/
+            j.get()->jointType = e_ropeJoint;
+            j.get()->setLength(50);
+        }
+        
+        
+
+        
+    }
+
+    
 
     player[owner].nextBall = NORMAL;
     player[owner].texNextBall = ofTexture();
@@ -630,6 +675,25 @@ void ofApp::setNextBall(BallEvent ev)
         p.nextBall = ev;
         p.texNextBall = loadTexture(settings["gameObjects"]["balls"][ballEvMapping[ev]]["icon"].get<string>());
     }
+    tBallEvent = ofGetElapsedTimeMillis();
+}
+
+void ofApp::setNextWorldEvent(WorldEvent ev)
+{
+    currentWorldEvent = ev;
+    tWorldEvent = ofGetElapsedTimeMillis();
+
+    switch (currentWorldEvent)
+    {
+    case NORMAL_WORLD:
+        box2d.setGravity(0, 9.81);
+        break;
+    case INVERSE_GRAVITY:
+        box2d.setGravity(0, -9.81);
+        break;
+    default:
+        break;
+    }
 }
 
 void ofApp::updateIdle()
@@ -685,6 +749,25 @@ void ofApp::updateGame()
             {
                 sd->owner == 0 ? player[0].score++ : player[1].score++;
             }
+        }
+    }
+}
+
+void ofApp::updateWorldEvent()
+{
+    if(currentWorldEvent != NORMAL_WORLD){
+
+        switch (currentWorldEvent)
+        {
+        case WIND:
+            
+            break;
+        
+        default:
+            break;
+        }
+        if (ofGetElapsedTimeMillis() - tWorldEvent > settings["gameObjects"]["worldEventTime"].get<int>()){
+            currentWorldEvent = NORMAL_WORLD;
         }
     }
 }
@@ -833,8 +916,17 @@ void ofApp::drawGame()
     }
 
    for(auto& p:player){
-    p.texNextBall.draw(p.posTexNextBall);
+    ofSetColor(p.color);
+    if(p.texNextBall.isAllocated()){
+        p.texNextBall.draw(p.posTexNextBall);
+    }
    }
+
+   ofSetColor(255);
+   if(worldEventTexture.isAllocated()){
+    worldEventTexture.draw(worldEventTexturePos);
+   }
+
 }
 
 void ofApp::drawFinish()
@@ -875,6 +967,55 @@ void ofApp::clearWorld()
     balls.clear();
     joints.clear();
     anchors.clear();
+}
+
+void ofApp::onNextSpecialEvent()
+{
+    bool isWorldNormal = currentWorldEvent == NORMAL_WORLD;
+    bool isBallNormal = player[0].nextBall == NORMAL &&
+    player[1].nextBall == NORMAL;
+
+    if (isWorldNormal && isBallNormal){
+        if(ofRandom(1.0)> 0.5){
+            setNextBall(ballEventList.back());
+            ballEventList.pop_back();
+        }else{
+            setNextWorldEvent(worldEventList.back());
+            worldEventList.pop_back();
+        }
+    }else if (isBallNormal){
+        setNextBall(ballEventList.back());
+        ballEventList.pop_back();
+    }else if (isWorldNormal){
+        setNextWorldEvent(worldEventList.back());
+            worldEventList.pop_back();
+    }else{
+        if(ofRandom(1.0)> 0.5){
+            setNextBall(ballEventList.back());
+            ballEventList.pop_back();
+        }else{
+            setNextWorldEvent(worldEventList.back());
+            worldEventList.pop_back();
+        }
+    }
+}
+
+void ofApp::refreshWorldEvents()
+{
+    for (auto& p:worldEvMapping){
+        worldEventList.push_back(p.first);
+    }
+    auto rng = std::default_random_engine {};
+    std::shuffle(std::begin(worldEventList), std::end(worldEventList), rng);
+}
+
+void ofApp::refreshBallEvents()
+{
+    for (auto& p:ballEvMapping){
+        ballEventList.push_back(p.first);
+    }
+    auto rng = std::default_random_engine {};
+    std::shuffle(std::begin(ballEventList), std::end(ballEventList), rng);
 }
 
 void ofApp::drawCrosshair(ofVec2f pos, ofColor color)

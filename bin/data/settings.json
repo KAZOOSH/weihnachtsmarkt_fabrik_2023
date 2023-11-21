@@ -48,11 +48,24 @@
                 "density": 0.2,
                 "friction": 0.4,
                 "icon": "img/huge ball.png",
-                "sound":"",
                 "radius": [
                     100,
                     200
-                ]
+                ],
+                "sound": "",
+                "text":"HUGE BALL"
+            },
+            "multiBall": {
+                "bounce": 0.4,
+                "density": 1.0,
+                "friction": 0.4,
+                "icon": "img/multiball.png",
+                "radius": [
+                    4,
+                    8
+                ],
+                "sound": "",
+                "text":"MULTI BALL"
             },
             "normal": {
                 "bounce": 0.5,
@@ -62,21 +75,38 @@
                 "radius": [
                     20,
                     50
-                ]
+                ],
+                "text":""
             },
             "tinyBall": {
                 "bounce": 0.2,
                 "density": 5.0,
                 "friction": 0.4,
                 "icon": "img/tiny ball.png",
-                "sound":"",
                 "radius": [
                     4,
                     8
-                ]
-            },
+                ],
+                "sound": "",
+                "text":"TINY BALL"
+            }
         },
-        "gameTime": 5
+        "worldEvents":{
+            "normal":{
+                "text":"",
+                "icon":""
+            },
+            "inverseGravity":{
+                "text":"HELIUM",
+                "icon":""
+            },
+            "wind":{
+                "text":"WIND",
+                "icon":""
+            }
+        },
+        "gameTime": 30,
+        "worldEventTime": 10
     },
     "network": {
         "port": 8888
