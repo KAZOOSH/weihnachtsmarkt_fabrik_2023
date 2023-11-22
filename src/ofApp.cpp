@@ -140,15 +140,7 @@ void ofApp::update()
     string message = udpMessage;
     if (message != "")
     {
-        if (message[0] == 'X')
-        {
-            player[ofToInt(message.substr(2, 1))-1].catapultPos.x = ofToInt(message.substr(4, 3));
-        }
-        else if (message[0] == 'Y')
-        {
-            player[ofToInt(message.substr(2, 1))-1].catapultPos.x = ofToInt(message.substr(4, 3));
-        }
-        else if (message[0] == 'S'){
+        if (message[0] == 'S'){
             int id = ofToInt(message.substr(2, 1))-1;
             if (ofGetElapsedTimeMillis() - player[id].lastShot > 200)
             {
@@ -159,6 +151,14 @@ void ofApp::update()
                 ev.position = Utils::convertCatapultToScreenCoords(player[id].catapultPos,ofVec2f(screen.getWidth(),screen.getHeight()));
                 onGameEvent(ev);
             }
+        }
+        else if (message[0] == 'X')
+        {
+            player[ofToInt(message.substr(2, 1))-1].catapultPos.x = ofToInt(message.substr(4, 3));
+        }
+        else if (message[0] == 'Y')
+        {
+            player[ofToInt(message.substr(2, 1))-1].catapultPos.y = ofToInt(message.substr(4, 3));
         }
             
     }
@@ -208,6 +208,7 @@ void ofApp::draw()
     }
 
     ofVec2f screenSize = ofVec2f(screen.getWidth(),screen.getHeight());
+    cout << player[0].catapultPos << " " << player[1].catapultPos <<endl;
     drawCrosshair(Utils::convertCatapultToScreenCoords(player[0].catapultPos,screenSize),
         player[0].color);
     drawCrosshair(Utils::convertCatapultToScreenCoords(player[1].catapultPos,screenSize),
@@ -384,7 +385,7 @@ void ofApp::mousePressed(int x, int y, int button)
 
 void ofApp::mouseMoved(int x, int y)
 {
-    player[0].catapultPos = ofVec2f(ofMap(x,0,screen.getWidth(),0,100),ofMap(y,0,screen.getHeight(),100,55));
+   // player[0].catapultPos = ofVec2f(ofMap(x,0,screen.getWidth(),0,100),ofMap(y,0,screen.getHeight(),100,35));
 }
 
 
@@ -674,6 +675,8 @@ void ofApp::setNextBall(BallEvent ev)
     for(auto& p:player){
         p.nextBall = ev;
         p.texNextBall = loadTexture(settings["gameObjects"]["balls"][ballEvMapping[ev]]["icon"].get<string>());
+        sound.load(settings["gameObjects"]["balls"][ballEvMapping[ev]]["sound"].get<string>());
+        sound.play();
     }
     tBallEvent = ofGetElapsedTimeMillis();
 }
@@ -694,6 +697,9 @@ void ofApp::setNextWorldEvent(WorldEvent ev)
     default:
         break;
     }
+
+    sound.load(settings["gameObjects"]["worldEvents"][worldEvMapping[ev]]["sound"].get<string>());
+    sound.play();
 }
 
 void ofApp::updateIdle()
@@ -736,6 +742,8 @@ void ofApp::updateGame()
         setState(FINISH);
     }
 
+   updateWorldEvent();
+
     // update score
     player[0].score = 0;
     player[1].score = 0;
@@ -767,7 +775,7 @@ void ofApp::updateWorldEvent()
             break;
         }
         if (ofGetElapsedTimeMillis() - tWorldEvent > settings["gameObjects"]["worldEventTime"].get<int>()){
-            currentWorldEvent = NORMAL_WORLD;
+            setNextWorldEvent(NORMAL_WORLD);
         }
     }
 }
@@ -927,6 +935,8 @@ void ofApp::drawGame()
     worldEventTexture.draw(worldEventTexturePos);
    }
 
+   drawSpecialEvents();
+
 }
 
 void ofApp::drawFinish()
@@ -947,6 +957,22 @@ void ofApp::drawFinish()
      if (ofGetElapsedTimeMillis() - tStateChanged > 5000)
     {
         setState(IDLE);
+    }
+}
+
+void ofApp::drawSpecialEvents()
+{
+    if (ofGetElapsedTimeMillis()-tWorldEvent < settings["style"]["tEvent"].get<float>()*1000){
+        float p = float(ofGetElapsedTimeMillis()-tWorldEvent) /float(settings["style"]["tEvent"].get<float>()*1000);
+        ///currentWorldEvent -> draw
+        ofPushMatrix();
+        ofScale(1);//n
+        //
+        ofPopMatrix();
+    }
+    if (ofGetElapsedTimeMillis()-tBallEvent < settings["style"]["tEvent"].get<float>()*1000){
+        float p = float(ofGetElapsedTimeMillis()-tBallEvent) /float(settings["style"]["tEvent"].get<float>()*1000);
+        //player[0].nextBall
     }
 }
 
@@ -1020,6 +1046,7 @@ void ofApp::refreshBallEvents()
 
 void ofApp::drawCrosshair(ofVec2f pos, ofColor color)
 {
+
     ofPushStyle();
     ofPushMatrix();
     ofSetColor(color);

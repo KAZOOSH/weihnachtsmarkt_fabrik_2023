@@ -52,8 +52,8 @@
                     100,
                     200
                 ],
-                "sound": "",
-                "text":"HUGE BALL"
+                "sound": "sound/Huge Ball.mp3",
+                "text": "HUGE BALL"
             },
             "multiBall": {
                 "bounce": 0.4,
@@ -64,8 +64,8 @@
                     4,
                     8
                 ],
-                "sound": "",
-                "text":"MULTI BALL"
+                "sound": "sound/Multiball.mp3",
+                "text": "MULTI BALL"
             },
             "normal": {
                 "bounce": 0.5,
@@ -76,7 +76,7 @@
                     20,
                     50
                 ],
-                "text":""
+                "text": ""
             },
             "tinyBall": {
                 "bounce": 0.2,
@@ -87,26 +87,29 @@
                     4,
                     8
                 ],
-                "sound": "",
-                "text":"TINY BALL"
-            }
-        },
-        "worldEvents":{
-            "normal":{
-                "text":"",
-                "icon":""
-            },
-            "inverseGravity":{
-                "text":"HELIUM",
-                "icon":""
-            },
-            "wind":{
-                "text":"WIND",
-                "icon":""
+                "sound": "sound/Tiny Ball.mp3",
+                "text": "TINY BALL"
             }
         },
         "gameTime": 30,
-        "worldEventTime": 10
+        "worldEventTime": 10,
+        "worldEvents": {
+            "inverseGravity": {
+                "icon": "",
+                "text": "HELIUM",
+                "sound": "sound/Helium.mp3"
+            },
+            "normal": {
+                "icon": "",
+                "text": "",
+                "sound": ""
+            },
+            "wind": {
+                "icon": "",
+                "text": "WIND",
+                "sound": ""
+            }
+        }
     },
     "network": {
         "port": 8888
@@ -124,7 +127,7 @@
                 },
                 {
                     "x": 1080.0,
-                    "y": 1920.0
+                    "y": 1921.0
                 },
                 {
                     "x": 0.0,
@@ -166,6 +169,7 @@
         }
     ],
     "style": {
+        "tEvent":2.0,
         "fonts": {
             "head": {
                 "color": [

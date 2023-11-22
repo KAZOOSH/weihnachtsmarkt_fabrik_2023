@@ -120,6 +120,7 @@ public:
     void drawStart();
     void drawGame();
     void drawFinish();
+    void drawSpecialEvents();
 
     void clearWorld();
 
@@ -160,6 +161,8 @@ public:
     long tBallEvent = 0;
     vector<BallEvent> ballEventList;
     vector<WorldEvent> worldEventList;
+
+    ofSoundPlayer  sound;
    
 
     // graphics
