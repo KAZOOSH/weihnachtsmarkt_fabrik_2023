@@ -140,7 +140,7 @@ void ofApp::update()
     string message = udpMessage;
     if (message != "")
     {
-        if (message[0] == 'S'){
+        if (message[0] == 's' || message[0] == 'S' ){
             int id = ofToInt(message.substr(2, 1))-1;
             if (ofGetElapsedTimeMillis() - player[id].lastShot > 200)
             {

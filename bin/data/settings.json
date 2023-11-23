@@ -96,18 +96,18 @@
         "worldEvents": {
             "inverseGravity": {
                 "icon": "",
-                "text": "HELIUM",
-                "sound": "sound/Helium.mp3"
+                "sound": "sound/Helium.mp3",
+                "text": "HELIUM"
             },
             "normal": {
                 "icon": "",
-                "text": "",
-                "sound": ""
+                "sound": "",
+                "text": ""
             },
             "wind": {
                 "icon": "",
-                "text": "WIND",
-                "sound": ""
+                "sound": "",
+                "text": "WIND"
             }
         }
     },
@@ -169,7 +169,6 @@
         }
     ],
     "style": {
-        "tEvent":2.0,
         "fonts": {
             "head": {
                 "color": [
@@ -208,6 +207,7 @@
                 ]
             ]
         },
+        "tEvent": 2.0,
         "text": {
             "finishDraw": {
                 "align": "center",
