@@ -108,42 +108,7 @@ void ofApp::setup()
     worldEvMapping.insert(make_pair(NORMAL_WORLD,"normal"));
     worldEvMapping.insert(make_pair(INVERSE_GRAVITY,"inverseGravity"));
     worldEvMapping.insert(make_pair(WIND,"wind"));
-    /*
-    // add objects
-    splash.minSize = settings["gameObjects"]["splash"]["sizeMin"];
-    splash.maxSize = settings["gameObjects"]["splash"]["sizeMax"];
-    for (auto& obj: settings["gameObjects"]["splash"]["src"])
-    {
-        splash.textures.push_back(loadTexture(obj));
-    }
-    for (auto& obj : settings["gameObjects"]["splash"]["sound"])
-    {
-        splash.sounds.push_back(ofSoundPlayer());
-        splash.sounds.back().load(obj);
-    }
-
-    for (auto& obj: settings["gameObjects"]["specialObjects"])
-    {
-        specialObjects.push_back(GameObject());
-        specialObjects.back().textures.push_back(loadTexture(obj[0]));
-        specialObjects.back().sounds.push_back(ofSoundPlayer());
-        specialObjects.back().sounds.back().load(obj[1]);
-        specialObjects.back().minSize = obj[2];
-        specialObjects.back().maxSize = obj[3];
-
-    }
-
-
-    // grafittiEx
-    graffitiExTex = loadTexture(settings["graffitiEx"]["car"]);
-    for (auto& p: settings["graffitiEx"]["person"])
-    {
-        cleaningPersonTex.push_back(loadTexture(p));
-    }
-    carSound.load(settings["graffitiEx"]["carSound"]);
-    cleanerSound.load(settings["graffitiEx"]["cleanerSound"]);
-    */
-
+    
     // init box 2d
     box2d.init();
     box2d.setGravity(0, 9.81);
@@ -187,6 +152,10 @@ void ofApp::update()
         else if (message[0] == 'Y')
         {
             player[ofToInt(message.substr(2, 1))-1].catapultPos.y = ofToInt(message.substr(4, 3));
+        }
+        else if (message[0] == 'b' || message[0] == 'B')
+        {
+            onNextSpecialEvent();
         }
             
     }
@@ -391,8 +360,7 @@ void ofApp::processKeyPressedEvent(int key, int screenId)
     }
     if (key == 'b')
     {
-        setNextWorldEvent(INVERSE_GRAVITY);
-        //setNextBall(MULTI_BALL);
+        onNextSpecialEvent();
     }
 }
 
