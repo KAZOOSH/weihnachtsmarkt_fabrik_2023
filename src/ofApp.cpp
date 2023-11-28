@@ -49,25 +49,17 @@ void ofApp::setup()
     ofClear(0);
     screen.end();
 
-    overlay.allocate(w, h);
-    overlay.begin();
+    treeBg.allocate(w, h);
+    treeBg.begin();
     ofClear(0);
-    overlay.end();
+    treeBg.end();
 
     // load fonts & colors
     fonts = Utils::loadFonts(settings["style"]["fonts"]);
     setupColors();
     setupTexts();
 
-    // setup tree
-    xmasTree.color = ofColor(appColors["tree"]);
-    xmasTree.top = ofVec2f(settings["tree"]["pos"]["top"][0], settings["tree"]["pos"]["top"][1]);
-    xmasTree.right = ofVec2f(settings["tree"]["pos"]["right"][0], settings["tree"]["pos"]["right"][1]);
-    xmasTree.left = ofVec2f(settings["tree"]["pos"]["left"][0], settings["tree"]["pos"]["left"][1]);
-    xmasTree.trunk = ofColor(appColors["trunk"]);
-    xmasTree.topTrunk = ofVec2f(settings["tree"]["trunkPos"]["top"][0], settings["tree"]["trunkPos"]["top"][1]);
-    xmasTree.rightTrunk = ofVec2f(settings["tree"]["trunkPos"]["right"][0], settings["tree"]["trunkPos"]["right"][1]);
-    xmasTree.leftTrunk = ofVec2f(settings["tree"]["trunkPos"]["left"][0], settings["tree"]["trunkPos"]["left"][1]);
+    setupTreeData(settings);
 
     // setup score    
     int gap = settings["gameObjects"]["score"]["gap"];
@@ -157,6 +149,7 @@ void ofApp::update()
         {
             onNextSpecialEvent();
         }
+      
             
     }
 
@@ -280,9 +273,7 @@ void ofApp::drawScreen(int screenId)
     screen.getTexture().drawSubsection(
         ofRectangle(0, 0, settingsScreen["size"][0].get<int>(), settingsScreen["size"][1].get<int>()),
         ofRectangle(0, dy, settingsScreen["size"][0].get<int>(), settingsScreen["size"][1].get<int>()));
-    overlay.getTexture().drawSubsection(
-        ofRectangle(0, 0, settingsScreen["size"][0].get<int>(), settingsScreen["size"][1].get<int>()),
-        ofRectangle(0, dy, settingsScreen["size"][0].get<int>(), settingsScreen["size"][1].get<int>()));
+   
     ofPopMatrix();
 
     //======================== use the matrix to transform points.
@@ -361,6 +352,13 @@ void ofApp::processKeyPressedEvent(int key, int screenId)
     if (key == 'b')
     {
         onNextSpecialEvent();
+    }
+    if (key == 'r')
+    {
+        settings = ofLoadJson("settings.json");
+        setupColors();
+        setupTexts();
+        setupTreeData(settings);
     }
 }
 
@@ -852,9 +850,23 @@ void ofApp::setupColors()
         color.g = c.value()[1];
         color.b = c.value()[2];
         color.a = c.value()[3];
-
-        appColors.emplace(c.key(), color);
+        appColors[c.key()] = color;
+        //appColors.emplace(c.key(), color);
     }
+}
+
+void ofApp::setupTreeData(ofJson s)
+{
+    // setup tree
+    xmasTree.color = ofColor(appColors["tree"]);
+    xmasTree.top = ofVec2f(settings["tree"]["pos"]["top"][0], settings["tree"]["pos"]["top"][1]);
+    xmasTree.right = ofVec2f(settings["tree"]["pos"]["right"][0], settings["tree"]["pos"]["right"][1]);
+    xmasTree.left = ofVec2f(settings["tree"]["pos"]["left"][0], settings["tree"]["pos"]["left"][1]);
+    xmasTree.trunk = ofColor(appColors["trunk"]);
+    xmasTree.topTrunk = ofVec2f(settings["tree"]["trunkPos"]["top"][0], settings["tree"]["trunkPos"]["top"][1]);
+    xmasTree.rightTrunk = ofVec2f(settings["tree"]["trunkPos"]["right"][0], settings["tree"]["trunkPos"]["right"][1]);
+    xmasTree.leftTrunk = ofVec2f(settings["tree"]["trunkPos"]["left"][0], settings["tree"]["trunkPos"]["left"][1]);
+    xmasTree.triangles = settings["tree"]["triangles"];
 }
 
 void ofApp::drawText(string textID) 
@@ -864,10 +876,41 @@ void ofApp::drawText(string textID)
 }
 
 void ofApp::drawTree(TreeData tree)
-{
-    ofSetColor(tree.color);
+{   
+    int hTree = tree.left[1] - tree.top[1];
+    int wTree = tree.right[0] - tree.left[0];
+
+    treeBg.begin();
+    ofClear(0);
+    ofPushStyle();
     ofFill();
-    ofDrawTriangle(tree.top[0], tree.top[1], tree.right[0], tree.right[1], tree.left[0], tree.left[1]);
+    //ofEnableBlendMode(OF_BLENDMODE_MULTIPLY);
+    for (auto& tr:tree.triangles)
+    {// fix draw function
+        ofSetColor(appColors[tr["color"]]);
+        //ofSetColor(255);
+        int py = tr["pos"][1].get<float>() * hTree +tree.top[1] ;
+        int height = tr["pos"][2].get<float>() * hTree;
+        int wMax = tr["pos"][1].get<float>()*wTree;
+        int pxMin = wTree*0.5 - wMax*0.5;
+        int pxMax = wTree*0.5 + wMax*0.5;
+        int px = ofMap(tr["pos"][0].get<float>(),0,1,pxMin,pxMax);
+        int wSide = height*2/sqrt(3)/2;
+        ofDrawTriangle(px,py,px-wSide,py+height,px+wSide,py+height);
+    }
+    
+
+    ofPopStyle();
+    treeBg.end();
+
+
+    //ofSetColor(tree.color);
+    ofSetColor(255);
+    ofFill();
+        ofDrawTriangle(tree.top[0], tree.top[1], tree.right[0], tree.right[1], tree.left[0], tree.left[1]);
+    treeBg.draw(0,0);
+
+
     ofSetColor(tree.trunk);
     ofDrawTriangle(tree.topTrunk[0], tree.topTrunk[1], tree.rightTrunk[0], tree.rightTrunk[1], tree.leftTrunk[0], tree.leftTrunk[1]);
 }

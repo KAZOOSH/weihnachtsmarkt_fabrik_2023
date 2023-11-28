@@ -2,6 +2,11 @@
     "files.associations": {
         "compare": "cpp",
         "cstdint": "cpp",
-        "format": "cpp"
+        "format": "cpp",
+        "*.ipp": "cpp",
+        "memory": "cpp",
+        "future": "cpp",
+        "istream": "cpp",
+        "functional": "cpp"
     }
 }

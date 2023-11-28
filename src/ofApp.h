@@ -49,6 +49,7 @@ struct TreeData {
     ofVec2f topTrunk;
     ofVec2f rightTrunk;
     ofVec2f leftTrunk;
+    ofJson triangles;
 };
 
 struct ScoreData {
@@ -94,6 +95,7 @@ public:
     void setup();
     void setupTexts();
     void setupColors();
+    void setupTreeData(ofJson settings);
     void update();
     void draw();
     void drawText(string textID);
@@ -155,7 +157,7 @@ public:
     
     ofImage img;
     ofFbo screen;
-    ofFbo overlay;
+    ofFbo treeBg;
 
     ofPoint points[10];
 
@@ -187,6 +189,7 @@ public:
     map<string, ofColor> appColors;
     vector <ScoreData> scoreData;
     TreeData xmasTree;
+    
     int alpha = 0;
     
     ofTrueTypeFont font;    
