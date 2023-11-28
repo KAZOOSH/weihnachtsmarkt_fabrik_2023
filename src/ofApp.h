@@ -35,12 +35,26 @@ struct TextData {
     string content = "none";
     string font = "none";
     float textLen = 0.f;
-    int r = 255,
-        g = 255,
-        b = 255,
-        a = 255;
+    ofColor color;
     int x = 0,
         y = 0;
+};
+
+struct TreeData {
+    ofColor color;
+    ofColor trunk;
+    ofVec2f top;
+    ofVec2f right;
+    ofVec2f left;
+    ofVec2f topTrunk;
+    ofVec2f rightTrunk;
+    ofVec2f leftTrunk;
+};
+
+struct ScoreData {
+    ofColor color;
+    ofVec2f pos;
+    int size = 0;
 };
 
 class EntityData {
@@ -79,9 +93,11 @@ public:
 		
     void setup();
     void setupTexts();
+    void setupColors();
     void update();
     void draw();
     void drawText(string textID);
+    void drawTree(TreeData tree);
     void drawWindow2(ofEventArgs& args);
     void drawWindow3(ofEventArgs& args);
     void drawWindow4(ofEventArgs& args);
@@ -168,11 +184,13 @@ public:
     // graphics
     map<string, shared_ptr<ofTrueTypeFont>> fonts;
     map<string, TextData> textData;
-
+    map<string, ofColor> appColors;
+    vector <ScoreData> scoreData;
+    TreeData xmasTree;
+    int alpha = 0;
     
     ofTrueTypeFont font;    
     float textLen;
-    int testNum = 0;
 
     // box 2d
     ofxBox2d                                    box2d;			  //	the box2d world

@@ -3,43 +3,43 @@
         "anchors": [
             [
                 0.5,
-                0.1
-            ],
-            [
-                0.3,
                 0.3
             ],
             [
-                0.7,
-                0.3
+                0.34,
+                0.57
             ],
             [
-                0.4,
-                0.4
+                0.66,
+                0.57
             ],
             [
-                0.6,
-                0.4
+                0.44,
+                0.61
             ],
             [
-                0.2,
-                0.45
+                0.56,
+                0.61
             ],
             [
-                0.35,
-                0.5
+                0.25,
+                0.73
+            ],
+            [
+                0.75,
+                0.73
+            ],
+            [
+                0.36,
+                0.78
             ],
             [
                 0.5,
-                0.5
+                0.8
             ],
             [
-                0.65,
-                0.5
-            ],
-            [
-                0.8,
-                0.45
+                0.64,
+                0.78
             ]
         ],
         "balls": {
@@ -74,7 +74,7 @@
                 "icon": "",
                 "radius": [
                     20,
-                    50
+                    40
                 ],
                 "text": ""
             },
@@ -92,6 +92,15 @@
             }
         },
         "gameTime": 30,
+        "score": {
+            "gap": 10,
+            "pos": [
+                320,
+                210
+            ],
+            "size": 20
+        },
+        "timerColor": "textSecondary",
         "worldEventTime": 10,
         "worldEvents": {
             "inverseGravity": {
@@ -159,16 +168,66 @@
             "id": "main",
             "position": [
                 0,
-                200
+                50
             ],
             "quad": "0",
             "size": [
                 1080,
-                1920
+                1570
             ]
         }
     ],
     "style": {
+        "colors": {
+            "gold": [
+                212,
+                175,
+                55,
+                255
+            ],
+            "red": [
+                235,
+                51,
+                35,
+                255
+            ],
+            "scoreBase": [
+                180,
+                180,
+                180,
+                180
+            ],
+            "textPrimary": [
+                255,
+                255,
+                0,
+                255
+            ],
+            "textSecondary": [
+                255,
+                0,
+                255,
+                255
+            ],
+            "textTertiary": [
+                0,
+                255,
+                255,
+                255
+            ],
+            "tree": [
+                40,
+                170,
+                35,
+                255
+            ],
+            "trunk": [
+                74,
+                26,
+                23,
+                180
+            ]
+        },
         "fonts": {
             "head": {
                 "color": [
@@ -177,8 +236,8 @@
                     0,
                     0
                 ],
-                "font": "fonts/BerkshireSwash-Regular.ttf",
-                "size": 70
+                "font": "fonts/ChristmasSparkle.ttf",
+                "size": 100
             },
             "timer": {
                 "color": [
@@ -187,8 +246,8 @@
                     0,
                     0
                 ],
-                "font": "fonts/BerkshireSwash-Regular.ttf",
-                "size": 200
+                "font": "fonts/JAi.ttf",
+                "size": 150
             }
         },
         "player": {
@@ -209,14 +268,59 @@
         },
         "tEvent": 2.0,
         "text": {
-            "finishDraw": {
+            "0_idleTitle1": {
                 "align": "center",
-                "color": [
-                    255,
-                    0,
-                    0,
-                    255
+                "color": "textPrimary",
+                "font": "head",
+                "pos": [
+                    155,
+                    105
                 ],
+                "text": "Hängt jeweils eine Kugel auf,"
+            },
+            "0_idleTitle2": {
+                "align": "center",
+                "color": "textPrimary",
+                "font": "head",
+                "pos": [
+                    55,
+                    190
+                ],
+                "text": "um zu beginnen!"
+            },
+            "1_startLos": {
+                "align": "center",
+                "color": "textSecondary",
+                "font": "head",
+                "pos": [
+                    155,
+                    860
+                ],
+                "text": "LOS!"
+            },
+            "1_startTitle1": {
+                "align": "center",
+                "color": "textPrimary",
+                "font": "head",
+                "pos": [
+                    155,
+                    105
+                ],
+                "text": "Wer am meisten schmückt,"
+            },
+            "1_startTitle2": {
+                "align": "center",
+                "color": "textTertiary",
+                "font": "head",
+                "pos": [
+                    155,
+                    190
+                ],
+                "text": "gewinnt!"
+            },
+            "2_finishDraw": {
+                "align": "center",
+                "color": "textPrimary",
                 "font": "head",
                 "pos": [
                     155,
@@ -224,29 +328,19 @@
                 ],
                 "text": "Unentschieden!"
             },
-            "finishGold": {
+            "2_finishGold": {
                 "align": "center",
-                "color": [
-                    212,
-                    175,
-                    55,
-                    255
-                ],
-                "font": "head",
+                "color": "gold",
+                "font": "timer",
                 "pos": [
                     155,
                     500
                 ],
                 "text": "GOLD"
             },
-            "finishPlayer": {
+            "2_finishPlayer": {
                 "align": "center",
-                "color": [
-                    255,
-                    0,
-                    0,
-                    255
-                ],
+                "color": "textPrimary",
                 "font": "head",
                 "pos": [
                     155,
@@ -254,29 +348,19 @@
                 ],
                 "text": "Spieler"
             },
-            "finishRot": {
+            "2_finishRot": {
                 "align": "center",
-                "color": [
-                    235,
-                    51,
-                    35,
-                    255
-                ],
-                "font": "head",
+                "color": "red",
+                "font": "timer",
                 "pos": [
                     155,
                     500
                 ],
                 "text": "ROT"
             },
-            "finishWins": {
+            "2_finishWins": {
                 "align": "center",
-                "color": [
-                    255,
-                    0,
-                    0,
-                    255
-                ],
+                "color": "textPrimary",
                 "font": "head",
                 "pos": [
                     155,
@@ -284,66 +368,48 @@
                 ],
                 "text": "gewinnt!"
             },
-            "idleTitle": {
+            "HELIUM": {
                 "align": "center",
-                "color": [
-                    255,
-                    255,
-                    0,
-                    255
-                ],
+                "color": "textPrimary",
                 "font": "head",
                 "pos": [
                     155,
-                    92
+                    250
                 ],
-                "text": "Schmückt den Baum!"
-            },
-            "startLos": {
-                "align": "center",
-                "color": [
-                    0,
-                    255,
-                    255,
-                    255
-                ],
-                "font": "timer",
-                "pos": [
-                    155,
-                    700
-                ],
-                "text": "LOS!"
-            },
-            "startTitle1": {
-                "align": "center",
-                "color": [
-                    255,
-                    0,
-                    0,
-                    255
-                ],
-                "font": "head",
-                "pos": [
-                    155,
-                    92
-                ],
-                "text": "Wer am meisten schmückt,"
-            },
-            "startTitle2": {
-                "align": "center",
-                "color": [
-                    0,
-                    255,
-                    255,
-                    255
-                ],
-                "font": "head",
-                "pos": [
-                    155,
-                    150
-                ],
-                "text": "gewinnt!"
+                "text": "Helium"
             }
+        }
+    },
+    "tree": {
+        "color": "tree",
+        "pos": {
+            "left": [
+                90,
+                1380
+            ],
+            "right": [
+                990,
+                1380
+            ],
+            "top": [
+                540,
+                300
+            ]
+        },
+        "trunk": "trunk",
+        "trunkPos": {
+            "left": [
+                440,
+                1500
+            ],
+            "right": [
+                640,
+                1500
+            ],
+            "top": [
+                540,
+                1300
+            ]
         }
     }
 }

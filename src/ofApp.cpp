@@ -42,7 +42,7 @@ void ofApp::setup()
         warper.back().hide();
         warper.back().load(ofToString(i), "settings.json");
         ++i;
-    }
+    }    
 
     screen.allocate(w, h);
     screen.begin();
@@ -54,10 +54,38 @@ void ofApp::setup()
     ofClear(0);
     overlay.end();
 
-    // load fonts
+    // load fonts & colors
     fonts = Utils::loadFonts(settings["style"]["fonts"]);
+    setupColors();
     setupTexts();
 
+    // setup tree
+    xmasTree.color = ofColor(appColors["tree"]);
+    xmasTree.top = ofVec2f(settings["tree"]["pos"]["top"][0], settings["tree"]["pos"]["top"][1]);
+    xmasTree.right = ofVec2f(settings["tree"]["pos"]["right"][0], settings["tree"]["pos"]["right"][1]);
+    xmasTree.left = ofVec2f(settings["tree"]["pos"]["left"][0], settings["tree"]["pos"]["left"][1]);
+    xmasTree.trunk = ofColor(appColors["trunk"]);
+    xmasTree.topTrunk = ofVec2f(settings["tree"]["trunkPos"]["top"][0], settings["tree"]["trunkPos"]["top"][1]);
+    xmasTree.rightTrunk = ofVec2f(settings["tree"]["trunkPos"]["right"][0], settings["tree"]["trunkPos"]["right"][1]);
+    xmasTree.leftTrunk = ofVec2f(settings["tree"]["trunkPos"]["left"][0], settings["tree"]["trunkPos"]["left"][1]);
+
+    // setup score    
+    int gap = settings["gameObjects"]["score"]["gap"];
+    float scorePosX = settings["gameObjects"]["score"]["pos"][0];
+    float scorePosY = settings["gameObjects"]["score"]["pos"][1];
+    float scoreSize = settings["gameObjects"]["score"]["size"];
+
+    for (int i = 0; i < 10 ; i++) {
+        ScoreData scorePoint;
+        scorePoint.size = scoreSize;
+        scorePoint.pos = ofVec2f(scorePosX + (i * (gap + (scoreSize * 2))), scorePosY);
+        scorePoint.color = appColors["scorebase"];
+        //cout << scorePoint.pos[0] << endl;
+        scoreData.push_back(scorePoint);
+    }
+
+
+    
     // init player
     player.push_back(PlayerData());
     player.push_back(PlayerData());
@@ -183,7 +211,8 @@ void ofApp::update()
 //--------------------------------------------------------------
 void ofApp::draw()
 {
-    ofBackground(0);
+    ofBackground(0);    
+    
     ofSetColor(255);
 
     screen.begin();
@@ -208,7 +237,7 @@ void ofApp::draw()
     }
 
     ofVec2f screenSize = ofVec2f(screen.getWidth(),screen.getHeight());
-    cout << player[0].catapultPos << " " << player[1].catapultPos <<endl;
+    //cout << player[0].catapultPos << " " << player[1].catapultPos <<endl;
     drawCrosshair(Utils::convertCatapultToScreenCoords(player[0].catapultPos,screenSize),
         player[0].color);
     drawCrosshair(Utils::convertCatapultToScreenCoords(player[1].catapultPos,screenSize),
@@ -385,7 +414,7 @@ void ofApp::mousePressed(int x, int y, int button)
 
 void ofApp::mouseMoved(int x, int y)
 {
-   // player[0].catapultPos = ofVec2f(ofMap(x,0,screen.getWidth(),0,100),ofMap(y,0,screen.getHeight(),100,35));
+   player[0].catapultPos = ofVec2f(ofMap(x,0,screen.getWidth(),0,100),ofMap(y,0,screen.getHeight(),100,35));
 }
 
 
@@ -652,8 +681,8 @@ void ofApp::setState(GameState newState)
     {
 
         clearWorld();
-        createAnchor(ofGetWidth() * 0.35, ofGetHeight() * 0.5);
-        createAnchor(ofGetWidth() * 0.7, ofGetHeight() * 0.5);
+        createAnchor(ofGetWidth() * 0.35, ofGetHeight() * 0.65);
+        createAnchor(ofGetWidth() * 0.65, ofGetHeight() * 0.65);
         break;
     }
     case START:
@@ -819,8 +848,8 @@ void ofApp::setupTexts()
     TextData data;
 
     for (auto &text : settings["style"]["text"].items())
-    {
-        
+    {    
+
         font.load(settings["style"]["fonts"][text.value()["font"]]["font"], settings["style"]["fonts"][text.value()["font"]]["size"]);
         textLen = font.stringWidth(text.value()["text"]);
 
@@ -838,48 +867,72 @@ void ofApp::setupTexts()
 
         
         if (text.value().contains("color")) {
-            data.r = text.value()["color"][0];
-            data.g = text.value()["color"][1];
-            data.b = text.value()["color"][2];
-            data.a = text.value()["color"][3];
+            data.color = appColors[text.value()["color"]];
         }
                
-        textData.emplace(text.key(), data);
-
-        //cout << text << endl;
-        
+        textData.emplace(text.key(), data);        
     }    
+}
+
+void ofApp::setupColors()
+{
+    ofColor color;
+
+    for (auto c : settings["style"]["colors"].items())
+    {
+        color.r = c.value()[0];
+        color.g = c.value()[1];
+        color.b = c.value()[2];
+        color.a = c.value()[3];
+
+        appColors.emplace(c.key(), color);
+    }
 }
 
 void ofApp::drawText(string textID) 
 {
-    ofSetColor(textData[textID].r, textData[textID].g, textData[textID].b, textData[textID].a);
+    ofSetColor(textData[textID].color);
     fonts[textData[textID].font]->drawString(textData[textID].content, textData[textID].x, textData[textID].y);
+}
+
+void ofApp::drawTree(TreeData tree)
+{
+    ofSetColor(tree.color);
+    ofFill();
+    ofDrawTriangle(tree.top[0], tree.top[1], tree.right[0], tree.right[1], tree.left[0], tree.left[1]);
+    ofSetColor(tree.trunk);
+    ofDrawTriangle(tree.topTrunk[0], tree.topTrunk[1], tree.rightTrunk[0], tree.rightTrunk[1], tree.leftTrunk[0], tree.leftTrunk[1]);
 }
 
 void ofApp::drawIdle()
 {
-    drawPhysicsWorld();  
-    drawText("idleTitle");    
+    drawTree(xmasTree);
+
+    drawPhysicsWorld(); 
+
+    drawText("0_idleTitle1");
+    drawText("0_idleTitle2");
+    
 }
 
 void ofApp::drawStart()
 {
-     drawPhysicsWorld();
-    
-     drawText("startTitle1");
-     drawText("startTitle2");
+    drawTree(xmasTree);
 
-     //fonts["head"]->drawString("Wer am meisten schmückt,", 155, 92);
-    //fonts["head"]->drawString("gewinnt!", 155, 150);
+    drawPhysicsWorld();
+        
+    drawText("1_startTitle1");
+    drawText("1_startTitle2");
 
     int t = 5000 - (ofGetElapsedTimeMillis() - tStateChanged);
 
     if (t<1000){
-        drawText("startLos");
+        drawText("1_startLos");
     }
     else if (t< 4000){
-        fonts["timer"]->drawString(ofToString((t/1000)), 500, 700);
+        //ofSetColor(textData[textID].r, textData[textID].g, textData[textID].b, textData[textID].a);
+        //fonts[textData[textID].font]->drawString(textData[textID].content, textData[textID].x, textData[textID].y);
+        fonts["timer"]->drawString(ofToString((t/1000)), 500, 860);
     }
 
     if (ofGetElapsedTimeMillis() - tStateChanged > 5000)
@@ -890,10 +943,13 @@ void ofApp::drawStart()
 }
 
 void ofApp::drawGame()
-{
+{    
+    drawTree(xmasTree);
+    
     drawPhysicsWorld();
 
     // draw timer
+    ofSetColor(appColors[settings["gameObjects"]["timerColor"]]);
     int tLeft = (settings["gameObjects"]["gameTime"].get<int>() * 1000 - (ofGetElapsedTimeMillis() - tStateChanged)) / 1000;
     int t1 = tLeft / 60;
     int t2 = tLeft % 60;
@@ -902,9 +958,10 @@ void ofApp::drawGame()
     timer += t2 < 10 ? "0" + ofToString(t2) : ofToString(t2);
 
     int w = fonts["timer"]->getStringBoundingBox(timer, 0, 0).width;
-    fonts["timer"]->drawString(timer, 0.5 * (screen.getWidth() - w), 92);
+    fonts["timer"]->drawString(timer, 0.5 * (screen.getWidth() - w), 155);
 
     // draw score
+    /*
     int scoreMax = anchors.size();
 
     int hScore = 45;
@@ -921,6 +978,25 @@ void ofApp::drawGame()
     ofSetColor(player[1].color);
         int w1 = wMax / scoreMax * abs(absScore);
         ofDrawRectangle((screen.getWidth() + w) * 0.5, y, w1, hScore);
+    }
+    */
+
+    for (int i = 0; i < scoreData.size(); i++) {
+        int noScore = scoreData.size() - player[0].score - player[1].score;
+        if (i < player[0].score) {
+            scoreData[i].color = player[0].color;
+        }
+        else if (i < player[0].score + noScore) {
+            scoreData[i].color = appColors["scoreBase"];
+        }
+        else {
+            scoreData[i].color = player[1].color;
+        }        
+    }
+    
+    for (auto& sp : scoreData) {
+        ofSetColor(sp.color);
+        ofDrawCircle(sp.pos[0], sp.pos[1], sp.size);
     }
 
    for(auto& p:player){
@@ -942,16 +1018,16 @@ void ofApp::drawGame()
 void ofApp::drawFinish()
 {
     if(player[0].score > player[1].score){
-        drawText("finishPlayer");
-        drawText("finishRot");
-        drawText("finishWins");
+        drawText("2_finishPlayer");
+        drawText("2_finishRot");
+        drawText("2_finishWins");
                  
     }else if(player[0].score < player[1].score){
-        drawText("finishPlayer");
-        drawText("finishGold");
-        drawText("finishWins");
+        drawText("2_finishPlayer");
+        drawText("2_finishGold");
+        drawText("2_finishWins");
     }else{
-        drawText("finishDraw");
+        drawText("2_finishDraw");
     }
     
      if (ofGetElapsedTimeMillis() - tStateChanged > 5000)
@@ -962,18 +1038,36 @@ void ofApp::drawFinish()
 
 void ofApp::drawSpecialEvents()
 {
+    
+
     if (ofGetElapsedTimeMillis()-tWorldEvent < settings["style"]["tEvent"].get<float>()*1000){
         float p = float(ofGetElapsedTimeMillis()-tWorldEvent) /float(settings["style"]["tEvent"].get<float>()*1000);
         ///currentWorldEvent -> draw
+        textData["HELIUM"].color[3] = alpha;
+        drawText("HELIUM");
+        
+        alpha = 255 * sin(p * PI);
+        /*
+        
+        if (alpha < 55) {
+            alpha += 50;
+        }
+        else if (alpha > 200) {
+            alpha -= 50;
+        };*/
+
         ofPushMatrix();
-        ofScale(1);//n
-        //
+        //ofScale(scaleSize);
+        ofRotateXDeg(90);
+        
         ofPopMatrix();
     }
     if (ofGetElapsedTimeMillis()-tBallEvent < settings["style"]["tEvent"].get<float>()*1000){
         float p = float(ofGetElapsedTimeMillis()-tBallEvent) /float(settings["style"]["tEvent"].get<float>()*1000);
         //player[0].nextBall
     }
+    
+    
 }
 
 void ofApp::clearWorld()
