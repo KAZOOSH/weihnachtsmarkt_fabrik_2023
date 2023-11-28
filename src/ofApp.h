@@ -42,9 +42,13 @@ struct TextData {
 
 struct TreeData {
     ofColor color;
+    ofColor trunk;
     ofVec2f top;
     ofVec2f right;
     ofVec2f left;
+    ofVec2f topTrunk;
+    ofVec2f rightTrunk;
+    ofVec2f leftTrunk;
 };
 
 struct ScoreData {
@@ -182,8 +186,7 @@ public:
     map<string, TextData> textData;
     map<string, ofColor> appColors;
     vector <ScoreData> scoreData;
-    TreeData tree;
-    //ofColor baseScoreColour = (180, 180, 180, 100);
+    TreeData xmasTree;
     int alpha = 0;
     
     ofTrueTypeFont font;    

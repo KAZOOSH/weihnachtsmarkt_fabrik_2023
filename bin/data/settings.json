@@ -74,7 +74,7 @@
                 "icon": "",
                 "radius": [
                     20,
-                    50
+                    40
                 ],
                 "text": ""
             },
@@ -100,6 +100,7 @@
             ],
             "size": 20
         },
+        "timerColor": "textSecondary",
         "worldEventTime": 10,
         "worldEvents": {
             "inverseGravity": {
@@ -172,7 +173,7 @@
             "quad": "0",
             "size": [
                 1080,
-                1500
+                1570
             ]
         }
     ],
@@ -194,7 +195,7 @@
                 180,
                 180,
                 180,
-                100
+                180
             ],
             "textPrimary": [
                 255,
@@ -219,6 +220,12 @@
                 170,
                 35,
                 255
+            ],
+            "trunk": [
+                74,
+                26,
+                23,
+                180
             ]
         },
         "fonts": {
@@ -272,6 +279,7 @@
                 "text": "Hängt jeweils eine Kugel auf,"
             },
             "0_idleTitle2": {
+                "align": "center",
                 "color": "textPrimary",
                 "font": "head",
                 "pos": [
@@ -376,16 +384,31 @@
         "color": "tree",
         "pos": {
             "left": [
-                100,
-                1400
+                90,
+                1380
             ],
             "right": [
-                980,
-                1400
+                990,
+                1380
             ],
             "top": [
                 540,
                 300
+            ]
+        },
+        "trunk": "trunk",
+        "trunkPos": {
+            "left": [
+                440,
+                1500
+            ],
+            "right": [
+                640,
+                1500
+            ],
+            "top": [
+                540,
+                1300
             ]
         }
     }

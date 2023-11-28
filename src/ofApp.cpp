@@ -60,13 +60,16 @@ void ofApp::setup()
     setupTexts();
 
     // setup tree
-    tree.color = appColors[settings["tree"]["color"]];
-    tree.top = ofVec2f(settings["tree"]["pos"]["top"][0], settings["tree"]["pos"]["top"][1]);
-    tree.right = ofVec2f(settings["tree"]["pos"]["right"][0], settings["tree"]["pos"]["right"][1]);
-    tree.left = ofVec2f(settings["tree"]["pos"]["left"][0], settings["tree"]["pos"]["left"][1]);
+    xmasTree.color = ofColor(appColors["tree"]);
+    xmasTree.top = ofVec2f(settings["tree"]["pos"]["top"][0], settings["tree"]["pos"]["top"][1]);
+    xmasTree.right = ofVec2f(settings["tree"]["pos"]["right"][0], settings["tree"]["pos"]["right"][1]);
+    xmasTree.left = ofVec2f(settings["tree"]["pos"]["left"][0], settings["tree"]["pos"]["left"][1]);
+    xmasTree.trunk = ofColor(appColors["trunk"]);
+    xmasTree.topTrunk = ofVec2f(settings["tree"]["trunkPos"]["top"][0], settings["tree"]["trunkPos"]["top"][1]);
+    xmasTree.rightTrunk = ofVec2f(settings["tree"]["trunkPos"]["right"][0], settings["tree"]["trunkPos"]["right"][1]);
+    xmasTree.leftTrunk = ofVec2f(settings["tree"]["trunkPos"]["left"][0], settings["tree"]["trunkPos"]["left"][1]);
 
-    // setup score
-    
+    // setup score    
     int gap = settings["gameObjects"]["score"]["gap"];
     float scorePosX = settings["gameObjects"]["score"]["pos"][0];
     float scorePosY = settings["gameObjects"]["score"]["pos"][1];
@@ -243,13 +246,6 @@ void ofApp::draw()
     screen.end();
 
     drawScreen(0);
-}
-
-void drawTree(TreeData tree) 
-{   
-    ofSetColor(tree.color);
-    ofFill();
-    ofDrawTriangle(tree.top[0], tree.top[1], tree.right[0], tree.right[1], tree.left[0], tree.left[1]);
 }
 
 void ofApp::drawWindow2(ofEventArgs &args)
@@ -899,29 +895,34 @@ void ofApp::drawText(string textID)
     fonts[textData[textID].font]->drawString(textData[textID].content, textData[textID].x, textData[textID].y);
 }
 
-void ofApp::drawIdle()
+void ofApp::drawTree(TreeData tree)
 {
-    ofSetColor(tree.color[0], tree.color[1], tree.color[2], tree.color[3]);
+    ofSetColor(tree.color);
     ofFill();
     ofDrawTriangle(tree.top[0], tree.top[1], tree.right[0], tree.right[1], tree.left[0], tree.left[1]);
-    
+    ofSetColor(tree.trunk);
+    ofDrawTriangle(tree.topTrunk[0], tree.topTrunk[1], tree.rightTrunk[0], tree.rightTrunk[1], tree.leftTrunk[0], tree.leftTrunk[1]);
+}
+
+void ofApp::drawIdle()
+{
+    drawTree(xmasTree);
+
     drawPhysicsWorld(); 
 
     drawText("0_idleTitle1");
     drawText("0_idleTitle2");
-
+    
 }
 
 void ofApp::drawStart()
 {
-    ofSetColor(tree.color[0], tree.color[1], tree.color[2], tree.color[3]);
-    ofFill();
-    ofDrawTriangle(tree.top[0], tree.top[1], tree.right[0], tree.right[1], tree.left[0], tree.left[1]);
-    
+    drawTree(xmasTree);
+
     drawPhysicsWorld();
-    
-     drawText("1_startTitle1");
-     drawText("1_startTitle2");
+        
+    drawText("1_startTitle1");
+    drawText("1_startTitle2");
 
     int t = 5000 - (ofGetElapsedTimeMillis() - tStateChanged);
 
@@ -942,14 +943,13 @@ void ofApp::drawStart()
 }
 
 void ofApp::drawGame()
-{
-    ofSetColor(tree.color[0], tree.color[1], tree.color[2], tree.color[3]);
-    ofFill();
-    ofDrawTriangle(tree.top[0], tree.top[1], tree.right[0], tree.right[1], tree.left[0], tree.left[1]);
+{    
+    drawTree(xmasTree);
     
     drawPhysicsWorld();
 
     // draw timer
+    ofSetColor(appColors[settings["gameObjects"]["timerColor"]]);
     int tLeft = (settings["gameObjects"]["gameTime"].get<int>() * 1000 - (ofGetElapsedTimeMillis() - tStateChanged)) / 1000;
     int t1 = tLeft / 60;
     int t2 = tLeft % 60;
