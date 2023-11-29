@@ -60,6 +60,7 @@ void ofApp::setup()
     setupTexts();
 
     setupTreeData(settings);
+    treeGraphic.load("img/xmasTree.png");
 
     // setup score    
     int gap = settings["gameObjects"]["score"]["gap"];
@@ -72,7 +73,6 @@ void ofApp::setup()
         scorePoint.size = scoreSize;
         scorePoint.pos = ofVec2f(scorePosX + (i * (gap + (scoreSize * 2))), scorePosY);
         scorePoint.color = appColors["scorebase"];
-        //cout << scorePoint.pos[0] << endl;
         scoreData.push_back(scorePoint);
     }
 
@@ -877,6 +877,7 @@ void ofApp::drawText(string textID)
 
 void ofApp::drawTree(TreeData tree)
 {   
+    /*
     int hTree = tree.left[1] - tree.top[1];
     int wTree = tree.right[0] - tree.left[0];
     int xCenter = wTree*0.5 + tree.left[0];
@@ -888,6 +889,7 @@ void ofApp::drawTree(TreeData tree)
     //ofEnableBlendMode(OF_BLENDMODE_MULTIPLY);
     for (auto& tr:tree.triangles)
     {// fix draw function
+        
         ofSetColor(appColors[tr["color"]]);
         //ofSetColor(255);
         int py = tr["pos"][1].get<float>() * hTree +tree.top[1] ;
@@ -903,14 +905,17 @@ void ofApp::drawTree(TreeData tree)
 
     ofPopStyle();
     treeBg.end();
-
+    
 
     //ofSetColor(tree.color);
     ofSetColor(255);
     ofFill();
    //     ofDrawTriangle(tree.top[0], tree.top[1], tree.right[0], tree.right[1], tree.left[0], tree.left[1]);
     treeBg.draw(0,0);
+    */
+    
 
+    treeGraphic.draw(xmasTree.top[1]-270, xmasTree.top[1]-30, 950, 1130);
 
     ofSetColor(tree.trunk);
     ofDrawTriangle(tree.topTrunk[0], tree.topTrunk[1], tree.rightTrunk[0], tree.rightTrunk[1], tree.leftTrunk[0], tree.leftTrunk[1]);
@@ -919,6 +924,7 @@ void ofApp::drawTree(TreeData tree)
 void ofApp::drawIdle()
 {
     drawTree(xmasTree);
+    //treeGraphic.draw(0, 0, 900, 1080);
 
     drawPhysicsWorld(); 
 
