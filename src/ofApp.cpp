@@ -904,19 +904,19 @@ void ofApp::drawTree(TreeData tree)
 
     ofPopStyle();
     treeBg.end();
-    
+    */
 
     //ofSetColor(tree.color);
     ofSetColor(255);
     ofFill();
     ofDrawTriangle(tree.top[0], tree.top[1], tree.right[0], tree.right[1], tree.left[0], tree.left[1]);
-    treeBg.draw(0,0);
-    */
+    //treeBg.draw(0,0);
+    
     
 
-    treeGraphic.draw(xmasTree.top[1]-270, xmasTree.top[1]-30, 950, 1130);
+    treeGraphic.draw(xmasTree.top[1]-170, xmasTree.top[1], 950, 1130);
 
-    ofSetColor(tree.trunk);
+    //ofSetColor(tree.trunk);
     ofDrawTriangle(tree.topTrunk[0], tree.topTrunk[1], tree.rightTrunk[0], tree.rightTrunk[1], tree.leftTrunk[0], tree.leftTrunk[1]);
 }
 

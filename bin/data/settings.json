@@ -132,7 +132,7 @@
                 },
                 {
                     "x": 1080.0,
-                    "y": 0.0
+                    "y": -3.0
                 },
                 {
                     "x": 1080.0,
@@ -260,8 +260,8 @@
                     0,
                     0
                 ],
-                "font": "fonts/ChristmasSparkle.ttf",
-                "size": 100
+                "font": "fonts/CHRISTMAS HUGS.ttf",
+                "size": 60
             },
             "timer": {
                 "color": [
@@ -298,7 +298,7 @@
                 "font": "head",
                 "pos": [
                     155,
-                    105
+                    1005
                 ],
                 "text": "Hängt jeweils eine Kugel auf,"
             },
@@ -308,7 +308,7 @@
                 "font": "head",
                 "pos": [
                     55,
-                    190
+                    1190
                 ],
                 "text": "um zu beginnen!"
             },
@@ -409,15 +409,15 @@
         "pos": {
             "left": [
                 90,
-                1380
+                1180
             ],
             "right": [
                 990,
-                1380
+                1180
             ],
             "top": [
                 540,
-                300
+                100
             ]
         },
         "triangles": [
@@ -446,7 +446,7 @@
                 ]
             },
             {
-                "color": "turquoise",
+                "color": "purple",
                 "pos": [
                     0.1,
                     0.05,
@@ -466,15 +466,15 @@
         "trunkPos": {
             "left": [
                 440,
-                1500
+                1200
             ],
             "right": [
                 640,
-                1500
+                1200
             ],
             "top": [
                 540,
-                1300
+                1000
             ]
         }
     }
