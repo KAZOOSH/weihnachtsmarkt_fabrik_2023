@@ -189,6 +189,7 @@ public:
     map<string, ofColor> appColors;
     vector <ScoreData> scoreData;
     TreeData xmasTree;
+    ofImage treeGraphic;
     
     int alpha = 0;
     
