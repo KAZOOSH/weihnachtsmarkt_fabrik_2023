@@ -44,12 +44,12 @@ void ofApp::setup()
         ++i;
     }    
 
-    screen.allocate(w, h);
+    screen.allocate(w, h, GL_RGBA32F_ARB);
     screen.begin();
     ofClear(0);
     screen.end();
 
-    treeBg.allocate(w, h);
+    treeBg.allocate(w, h, GL_RGBA32F_ARB);
     treeBg.begin();
     ofClear(0);
     treeBg.end();
@@ -877,9 +877,10 @@ void ofApp::drawText(string textID)
 
 void ofApp::drawTree(TreeData tree)
 {   
-    /*
+    
     int hTree = tree.left[1] - tree.top[1];
     int wTree = tree.right[0] - tree.left[0];
+    int xCenter = wTree*0.5 + tree.left[0];
 
     treeBg.begin();
     ofClear(0);
@@ -894,8 +895,8 @@ void ofApp::drawTree(TreeData tree)
         int py = tr["pos"][1].get<float>() * hTree +tree.top[1] ;
         int height = tr["pos"][2].get<float>() * hTree;
         int wMax = tr["pos"][1].get<float>()*wTree;
-        int pxMin = wTree*0.5 - wMax*0.5;
-        int pxMax = wTree*0.5 + wMax*0.5;
+        int pxMin = xCenter - wMax*0.5;
+        int pxMax = xCenter + wMax*0.5;
         int px = ofMap(tr["pos"][0].get<float>(),0,1,pxMin,pxMax);
         int wSide = height*2/sqrt(3)/2;
         ofDrawTriangle(px,py,px-wSide,py+height,px+wSide,py+height);
@@ -904,19 +905,19 @@ void ofApp::drawTree(TreeData tree)
 
     ofPopStyle();
     treeBg.end();
-    */
+    
 
     //ofSetColor(tree.color);
     ofSetColor(255);
     ofFill();
-    ofDrawTriangle(tree.top[0], tree.top[1], tree.right[0], tree.right[1], tree.left[0], tree.left[1]);
-    //treeBg.draw(0,0);
+    //ofDrawTriangle(tree.top[0], tree.top[1], tree.right[0], tree.right[1], tree.left[0], tree.left[1]);
+    treeBg.draw(0,0);
     
     
 
-    treeGraphic.draw(xmasTree.left[0]-60, xmasTree.top[1]-20, 1050, 1260);
+   treeGraphic.draw(xmasTree.left[0]-60, xmasTree.top[1]-20, 1050, 1260);
 
-    //ofSetColor(tree.trunk);
+    ofSetColor(tree.trunk);
     ofDrawTriangle(tree.topTrunk[0], tree.topTrunk[1], tree.rightTrunk[0], tree.rightTrunk[1], tree.leftTrunk[0], tree.leftTrunk[1]);
 }
 
