@@ -76,6 +76,7 @@
                     20,
                     40
                 ],
+                "sound": "sound/Huge Ball.mp3",
                 "text": ""
             },
             "tinyBall": {

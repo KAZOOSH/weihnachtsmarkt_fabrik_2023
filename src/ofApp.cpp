@@ -99,7 +99,7 @@ void ofApp::setup()
 
     worldEvMapping.insert(make_pair(NORMAL_WORLD,"normal"));
     worldEvMapping.insert(make_pair(INVERSE_GRAVITY,"inverseGravity"));
-    worldEvMapping.insert(make_pair(WIND,"wind"));
+    //worldEvMapping.insert(make_pair(WIND,"wind"));
     
     // init box 2d
     box2d.init();
@@ -351,7 +351,10 @@ void ofApp::processKeyPressedEvent(int key, int screenId)
     }
     if (key == 'b')
     {
-        onNextSpecialEvent();
+        if (state == GAME){
+            onNextSpecialEvent();
+        }
+        
     }
     if (key == 'r')
     {
@@ -762,9 +765,7 @@ void ofApp::updateWorldEvent()
 
         switch (currentWorldEvent)
         {
-        case WIND:
-            
-            break;
+       
         
         default:
             break;
@@ -1109,9 +1110,22 @@ void ofApp::clearWorld()
 
 void ofApp::onNextSpecialEvent()
 {
-    bool isWorldNormal = currentWorldEvent == NORMAL_WORLD;
-    bool isBallNormal = player[0].nextBall == NORMAL &&
-    player[1].nextBall == NORMAL;
+    if(ballEventList.size() == 0){
+        refreshBallEvents();
+    }
+    if(worldEventList.size() == 0){
+        refreshWorldEvents();
+    }
+
+    bool isWorldNormal = false;
+    if(currentWorldEvent == NORMAL_WORLD){
+        isWorldNormal = true;
+    };
+    bool isBallNormal = false;
+    if( player[0].nextBall == NORMAL &&
+    player[1].nextBall == NORMAL){
+        isBallNormal = true;
+    }
 
     if (isWorldNormal && isBallNormal){
         if(ofRandom(1.0)> 0.5){
@@ -1141,7 +1155,10 @@ void ofApp::onNextSpecialEvent()
 void ofApp::refreshWorldEvents()
 {
     for (auto& p:worldEvMapping){
-        worldEventList.push_back(p.first);
+        if(p.first!=NORMAL_WORLD){
+            worldEventList.push_back(p.first);
+        }
+        
     }
     auto rng = std::default_random_engine {};
     std::shuffle(std::begin(worldEventList), std::end(worldEventList), rng);
@@ -1150,7 +1167,10 @@ void ofApp::refreshWorldEvents()
 void ofApp::refreshBallEvents()
 {
     for (auto& p:ballEvMapping){
-        ballEventList.push_back(p.first);
+        if(p.first!=NORMAL){
+            ballEventList.push_back(p.first);
+        }
+        
     }
     auto rng = std::default_random_engine {};
     std::shuffle(std::begin(ballEventList), std::end(ballEventList), rng);

@@ -17,7 +17,6 @@ enum BallEvent{
 
 enum WorldEvent{
     NORMAL_WORLD,
-    WIND,
     INVERSE_GRAVITY
 };
 
