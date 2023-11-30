@@ -89,8 +89,8 @@ void ofApp::setup()
             settings["style"]["player"]["colors"][1][1].get<int>(),
             settings["style"]["player"]["colors"][1][2].get<int>(),
             settings["style"]["player"]["colors"][1][3].get<int>());
-    player[0].posTexNextBall = ofVec2f(30,30);
-    player[1].posTexNextBall = ofVec2f(screen.getWidth()- 30 - 128,30);
+    player[0].posTexNextBall = ofVec2f(130,1450);
+    player[1].posTexNextBall = ofVec2f(screen.getWidth()- 80 - 128,1450);
 
     player[0].soundWin.loadSound(settings["gameObjects"]["sounds"]["p1Win"]);
     player[1].soundWin.loadSound(settings["gameObjects"]["sounds"]["p2Win"]);
@@ -906,7 +906,10 @@ void ofApp::drawText(string textID)
 
 void ofApp::drawTree(TreeData tree)
 {   
-    
+    ofSetColor(tree.trunk);
+    ofDrawTriangle(tree.topTrunk[0], tree.topTrunk[1], tree.rightTrunk[0], tree.rightTrunk[1], tree.leftTrunk[0], tree.leftTrunk[1]);
+
+    /*
     int hTree = tree.left[1] - tree.top[1];
     int wTree = tree.right[0] - tree.left[0];
     int xCenter = wTree*0.5 + tree.left[0];
@@ -934,26 +937,19 @@ void ofApp::drawTree(TreeData tree)
 
     ofPopStyle();
     treeBg.end();
-    
+    */
 
-    //ofSetColor(tree.color);
     ofSetColor(255);
     ofFill();
     //ofDrawTriangle(tree.top[0], tree.top[1], tree.right[0], tree.right[1], tree.left[0], tree.left[1]);
-    treeBg.draw(0,0);
-    
-    
+    treeBg.draw(0,0);    
 
-   treeGraphic.draw(xmasTree.left[0]-60, xmasTree.top[1]-20, 1050, 1260);
-
-    ofSetColor(tree.trunk);
-    ofDrawTriangle(tree.topTrunk[0], tree.topTrunk[1], tree.rightTrunk[0], tree.rightTrunk[1], tree.leftTrunk[0], tree.leftTrunk[1]);
+    treeGraphic.draw(xmasTree.left[0] - 60, xmasTree.top[1] - 10, 1020, 1224);    
 }
 
 void ofApp::drawIdle()
 {
     drawTree(xmasTree);
-    //treeGraphic.draw(0, 0, 900, 1080);
 
     drawPhysicsWorld(); 
 
@@ -979,7 +975,7 @@ void ofApp::drawStart()
     else if (t< 4000){
         //ofSetColor(textData[textID].r, textData[textID].g, textData[textID].b, textData[textID].a);
         //fonts[textData[textID].font]->drawString(textData[textID].content, textData[textID].x, textData[textID].y);
-        fonts["timer"]->drawString(ofToString((t/1000)), 500, 860);
+        fonts["timer"]->drawString(ofToString((t/1000)), 510, 1635);
     }
 
     if (ofGetElapsedTimeMillis() - tStateChanged > 5000)
@@ -1005,7 +1001,7 @@ void ofApp::drawGame()
     timer += t2 < 10 ? "0" + ofToString(t2) : ofToString(t2);
 
     int w = fonts["timer"]->getStringBoundingBox(timer, 0, 0).width;
-    fonts["timer"]->drawString(timer, 0.5 * (screen.getWidth() - w), 155);
+    fonts["timer"]->drawString(timer, 0.5 * (screen.getWidth() - w), 1635);
 
     // draw score
     /*
