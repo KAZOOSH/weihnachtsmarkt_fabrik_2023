@@ -92,6 +92,9 @@ void ofApp::setup()
     player[0].posTexNextBall = ofVec2f(30,30);
     player[1].posTexNextBall = ofVec2f(screen.getWidth()- 30 - 128,30);
 
+    player[0].soundWin.loadSound(settings["gameObjects"]["sounds"]["p1Win"]);
+    player[1].soundWin.loadSound(settings["gameObjects"]["sounds"]["p2Win"]);
+
     ballEvMapping.insert(make_pair(NORMAL,"normal"));
     ballEvMapping.insert(make_pair(HUGE_BALL,"hugeBall"));
     ballEvMapping.insert(make_pair(TINY_BALL,"tinyBall"));
@@ -101,6 +104,14 @@ void ofApp::setup()
     worldEvMapping.insert(make_pair(INVERSE_GRAVITY,"inverseGravity"));
     //worldEvMapping.insert(make_pair(WIND,"wind"));
     
+   // sounds.insert(make_pair("contact",ofSoundPlayer()));
+    //sounds.insert(make_pair("start",ofSoundPlayer()));
+    sounds["contact"].loadSound(settings["gameObjects"]["sounds"]["ball"]);
+    sounds["contact"].setMultiPlay(true);
+    sounds["start"].loadSound(settings["gameObjects"]["sounds"]["start"]);
+    sounds["anchor"].loadSound(settings["gameObjects"]["sounds"]["anchor"]);
+    sounds["anchor"].setMultiPlay(true);
+
     // init box 2d
     box2d.init();
     box2d.setGravity(0, 9.81);
@@ -416,6 +427,7 @@ void ofApp::contactStart(ofxBox2dContactArgs &e)
         // check if both balls from the list
         if (ofIsStringInString(a->id, "b") && ofIsStringInString(b->id, "b"))
         {
+            sounds["contact"].play();
 
             // check if one is anchored
             bool isAnchoredA = false;
@@ -485,6 +497,7 @@ void ofApp::contactEnd(ofxBox2dContactArgs &e)
         // if anchor check if anchor empty
         if (isAnchor)
         {
+            sounds["anchor"].play();
             bool isEmpty = true;
             for (auto &j : joints)
             {
@@ -661,6 +674,21 @@ void ofApp::setState(GameState newState)
         {
             createAnchor(screen.getWidth() * pos[0].get<float>(), screen.getHeight() * pos[1].get<float>());
         }
+        sounds["start"].play();
+        break;
+        
+    }
+    case FINISH:
+    {
+         if (player[1].score < player[0].score) {
+            player[0].soundWin.play();
+        }
+        else if (player[1].score > player[0].score ) {
+            player[1].soundWin.play();
+        }
+        else {
+            //draw
+        }        
         break;
     }
     default:

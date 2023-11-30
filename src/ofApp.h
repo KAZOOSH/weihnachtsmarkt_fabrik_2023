@@ -28,6 +28,7 @@ struct PlayerData{
     BallEvent nextBall = NORMAL;
     ofTexture texNextBall;
     ofVec2f posTexNextBall;
+    ofSoundPlayer  soundWin;
 };
 
 struct TextData {
@@ -169,6 +170,7 @@ public:
     GameState state = IDLE;
     map<BallEvent,string> ballEvMapping;
     map<WorldEvent,string> worldEvMapping;
+    map<string,ofSoundPlayer> sounds;
     long tStateChanged = 0;
 
     WorldEvent currentWorldEvent = NORMAL_WORLD;

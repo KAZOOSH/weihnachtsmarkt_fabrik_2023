@@ -101,8 +101,15 @@
             ],
             "size": 20
         },
+        "sounds": {
+            "anchor": "sound/contact_paddle1.mp3",
+            "ball": "sound/contact_wall.mp3",
+            "p1Win": "sound/p1_win.mp3",
+            "p2Win": "sound/p2_win.mp3",
+            "start": "sound/Go.mp3"
+        },
         "timerColor": "textSecondary",
-        "worldEventTime": 10,
+        "worldEventTime": 10000,
         "worldEvents": {
             "inverseGravity": {
                 "icon": "",
