@@ -59,6 +59,7 @@ void ofApp::setup()
     setupColors();
     setupTexts();
 
+<<<<<<< Updated upstream
     // setup tree
     xmasTree.color = ofColor(appColors["tree"]);
     xmasTree.top = ofVec2f(settings["tree"]["pos"]["top"][0], settings["tree"]["pos"]["top"][1]);
@@ -68,6 +69,11 @@ void ofApp::setup()
     xmasTree.topTrunk = ofVec2f(settings["tree"]["trunkPos"]["top"][0], settings["tree"]["trunkPos"]["top"][1]);
     xmasTree.rightTrunk = ofVec2f(settings["tree"]["trunkPos"]["right"][0], settings["tree"]["trunkPos"]["right"][1]);
     xmasTree.leftTrunk = ofVec2f(settings["tree"]["trunkPos"]["left"][0], settings["tree"]["trunkPos"]["left"][1]);
+=======
+    setupTreeData(settings);
+    treeGraphic.load("img/xmasTree.png");
+    grid.load("img/grid.jpg");
+>>>>>>> Stashed changes
 
     // setup score    
     int gap = settings["gameObjects"]["score"]["gap"];
@@ -83,9 +89,7 @@ void ofApp::setup()
         //cout << scorePoint.pos[0] << endl;
         scoreData.push_back(scorePoint);
     }
-
-
-    
+        
     // init player
     player.push_back(PlayerData());
     player.push_back(PlayerData());
@@ -108,6 +112,7 @@ void ofApp::setup()
     worldEvMapping.insert(make_pair(NORMAL_WORLD,"normal"));
     worldEvMapping.insert(make_pair(INVERSE_GRAVITY,"inverseGravity"));
     worldEvMapping.insert(make_pair(WIND,"wind"));
+<<<<<<< Updated upstream
     /*
     // add objects
     splash.minSize = settings["gameObjects"]["splash"]["sizeMin"];
@@ -144,6 +149,12 @@ void ofApp::setup()
     cleanerSound.load(settings["graffitiEx"]["cleanerSound"]);
     */
 
+=======
+
+    refreshBallEvents();
+    refreshWorldEvents();
+    
+>>>>>>> Stashed changes
     // init box 2d
     box2d.init();
     box2d.setGravity(0, 9.81);
@@ -183,6 +194,7 @@ void ofApp::update()
         else if (message[0] == 'X')
         {
             player[ofToInt(message.substr(2, 1))-1].catapultPos.x = ofToInt(message.substr(4, 3));
+            //cout << message << endl;
         }
         else if (message[0] == 'Y')
         {
@@ -896,12 +908,59 @@ void ofApp::drawText(string textID)
 }
 
 void ofApp::drawTree(TreeData tree)
+<<<<<<< Updated upstream
 {
     ofSetColor(tree.color);
     ofFill();
     ofDrawTriangle(tree.top[0], tree.top[1], tree.right[0], tree.right[1], tree.left[0], tree.left[1]);
     ofSetColor(tree.trunk);
     ofDrawTriangle(tree.topTrunk[0], tree.topTrunk[1], tree.rightTrunk[0], tree.rightTrunk[1], tree.leftTrunk[0], tree.leftTrunk[1]);
+=======
+{   
+    //grid.draw(0, 350, 1080, 1570);
+
+    ofSetColor(tree.trunk);
+    ofDrawTriangle(tree.topTrunk[0], tree.topTrunk[1], tree.rightTrunk[0], tree.rightTrunk[1], tree.leftTrunk[0], tree.leftTrunk[1]);
+
+    /*
+    int hTree = tree.left[1] - tree.top[1];
+    int wTree = tree.right[0] - tree.left[0];
+    int xCenter = wTree*0.5 + tree.left[0];
+
+    treeBg.begin();
+    ofClear(0);
+    ofPushStyle();
+    ofFill();
+    //ofEnableBlendMode(OF_BLENDMODE_MULTIPLY);
+    for (auto& tr:tree.triangles)
+    {// fix draw function
+        
+        ofSetColor(appColors[tr["color"]]);
+        //ofSetColor(255);
+        int py = tr["pos"][1].get<float>() * hTree +tree.top[1] ;
+        int height = tr["pos"][2].get<float>() * hTree;
+        int wMax = tr["pos"][1].get<float>()*wTree;
+        int pxMin = xCenter - wMax*0.5;
+        int pxMax = xCenter + wMax*0.5;
+        int px = ofMap(tr["pos"][0].get<float>(),0,1,pxMin,pxMax);
+        int wSide = height*2/sqrt(3)/2;
+        ofDrawTriangle(px,py,px-wSide,py+height,px+wSide,py+height);
+    }
+    
+
+    ofPopStyle();
+    treeBg.end();    
+    */
+
+    ofSetColor(255);
+    ofFill();
+    //ofDrawTriangle(tree.top[0], tree.top[1], tree.right[0], tree.right[1], tree.left[0], tree.left[1]);
+    treeBg.draw(0,0);
+    
+
+    treeGraphic.draw(xmasTree.left[0] - 60, xmasTree.top[1] -10, 1020, 1224);
+
+>>>>>>> Stashed changes
 }
 
 void ofApp::drawIdle()
@@ -932,7 +991,7 @@ void ofApp::drawStart()
     else if (t< 4000){
         //ofSetColor(textData[textID].r, textData[textID].g, textData[textID].b, textData[textID].a);
         //fonts[textData[textID].font]->drawString(textData[textID].content, textData[textID].x, textData[textID].y);
-        fonts["timer"]->drawString(ofToString((t/1000)), 500, 860);
+        fonts["timer"]->drawString(ofToString((t/1000)), 510, 1635);
     }
 
     if (ofGetElapsedTimeMillis() - tStateChanged > 5000)
@@ -958,7 +1017,7 @@ void ofApp::drawGame()
     timer += t2 < 10 ? "0" + ofToString(t2) : ofToString(t2);
 
     int w = fonts["timer"]->getStringBoundingBox(timer, 0, 0).width;
-    fonts["timer"]->drawString(timer, 0.5 * (screen.getWidth() - w), 155);
+    fonts["timer"]->drawString(timer, 0.5 * (screen.getWidth() - w), 1635);
 
     // draw score
     /*
@@ -1145,7 +1204,7 @@ void ofApp::drawCrosshair(ofVec2f pos, ofColor color)
     ofPushMatrix();
     ofSetColor(color);
     ofTranslate(pos);
-    ofDrawCircle(0,0,5);
+    ofDrawCircle(0,0,8);
     ofPopMatrix();
     ofPopStyle();
 }

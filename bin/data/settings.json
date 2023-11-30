@@ -7,39 +7,39 @@
             ],
             [
                 0.34,
-                0.57
-            ],
-            [
-                0.66,
-                0.57
-            ],
-            [
-                0.44,
-                0.61
-            ],
-            [
-                0.56,
-                0.61
-            ],
-            [
-                0.25,
-                0.73
-            ],
-            [
-                0.75,
-                0.73
-            ],
-            [
-                0.36,
-                0.78
-            ],
-            [
-                0.5,
-                0.8
+                0.47
             ],
             [
                 0.64,
-                0.78
+                0.46
+            ],
+            [
+                0.45,
+                0.53
+            ],
+            [
+                0.56,
+                0.51
+            ],
+            [
+                0.25,
+                0.63
+            ],
+            [
+                0.75,
+                0.65
+            ],
+            [
+                0.34,
+                0.66
+            ],
+            [
+                0.5,
+                0.65
+            ],
+            [
+                0.64,
+                0.68
             ]
         ],
         "balls": {
@@ -91,16 +91,16 @@
                 "text": "TINY BALL"
             }
         },
-        "gameTime": 30,
+        "gameTime": 10,
         "score": {
-            "gap": 10,
+            "gap": 8,
             "pos": [
-                320,
-                210
+                342,
+                1510
             ],
-            "size": 20
+            "size": 18
         },
-        "timerColor": "textSecondary",
+        "timerColor": "textPrimary",
         "worldEventTime": 10,
         "worldEvents": {
             "inverseGravity": {
@@ -173,7 +173,7 @@
             "quad": "0",
             "size": [
                 1080,
-                1570
+                1920
             ]
         }
     ],
@@ -198,8 +198,8 @@
                 180
             ],
             "textPrimary": [
-                255,
-                255,
+                200,
+                200,
                 0,
                 255
             ],
@@ -236,8 +236,23 @@
                     0,
                     0
                 ],
+<<<<<<< Updated upstream
                 "font": "fonts/ChristmasSparkle.ttf",
                 "size": 100
+=======
+                "font": "fonts/CHRISTMAS HUGS.ttf",
+                "size": 48
+            },
+            "important": {
+                "color": [
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                "font": "fonts/CHRISTMAS HUGS.ttf",
+                "size": 60
+>>>>>>> Stashed changes
             },
             "timer": {
                 "color": [
@@ -247,7 +262,7 @@
                     0
                 ],
                 "font": "fonts/JAi.ttf",
-                "size": 150
+                "size": 80
             }
         },
         "player": {
@@ -274,9 +289,13 @@
                 "font": "head",
                 "pos": [
                     155,
+<<<<<<< Updated upstream
                     105
+=======
+                    1450
+>>>>>>> Stashed changes
                 ],
-                "text": "Hängt jeweils eine Kugel auf,"
+                "text": "Hängt jeweils eine Kugel auf"
             },
             "0_idleTitle2": {
                 "align": "center",
@@ -284,17 +303,21 @@
                 "font": "head",
                 "pos": [
                     55,
+<<<<<<< Updated upstream
                     190
+=======
+                    1510
+>>>>>>> Stashed changes
                 ],
                 "text": "um zu beginnen!"
             },
             "1_startLos": {
                 "align": "center",
-                "color": "textSecondary",
-                "font": "head",
+                "color": "textPrimary",
+                "font": "important",
                 "pos": [
                     155,
-                    860
+                    1635
                 ],
                 "text": "LOS!"
             },
@@ -304,27 +327,27 @@
                 "font": "head",
                 "pos": [
                     155,
-                    105
+                    1450
                 ],
                 "text": "Wer am meisten schmückt,"
             },
             "1_startTitle2": {
                 "align": "center",
-                "color": "textTertiary",
+                "color": "textPrimary",
                 "font": "head",
                 "pos": [
                     155,
-                    190
+                    1510
                 ],
                 "text": "gewinnt!"
             },
             "2_finishDraw": {
                 "align": "center",
                 "color": "textPrimary",
-                "font": "head",
+                "font": "timer",
                 "pos": [
                     155,
-                    150
+                    1300
                 ],
                 "text": "Unentschieden!"
             },
@@ -334,7 +357,7 @@
                 "font": "timer",
                 "pos": [
                     155,
-                    500
+                    1300
                 ],
                 "text": "GOLD"
             },
@@ -344,7 +367,7 @@
                 "font": "head",
                 "pos": [
                     155,
-                    300
+                    1150
                 ],
                 "text": "Spieler"
             },
@@ -354,7 +377,7 @@
                 "font": "timer",
                 "pos": [
                     155,
-                    500
+                    1300
                 ],
                 "text": "ROT"
             },
@@ -364,7 +387,7 @@
                 "font": "head",
                 "pos": [
                     155,
-                    700
+                    1450
                 ],
                 "text": "gewinnt!"
             },
@@ -374,7 +397,7 @@
                 "font": "head",
                 "pos": [
                     155,
-                    250
+                    1250
                 ],
                 "text": "Helium"
             }
@@ -385,6 +408,7 @@
         "pos": {
             "left": [
                 90,
+<<<<<<< Updated upstream
                 1380
             ],
             "right": [
@@ -394,11 +418,23 @@
             "top": [
                 540,
                 300
+=======
+                1520
+            ],
+            "right": [
+                990,
+                1520
+            ],
+            "top": [
+                540,
+                450
+>>>>>>> Stashed changes
             ]
         },
         "trunk": "trunk",
         "trunkPos": {
             "left": [
+<<<<<<< Updated upstream
                 440,
                 1500
             ],
@@ -409,6 +445,18 @@
             "top": [
                 540,
                 1300
+=======
+                390,
+                1650
+            ],
+            "right": [
+                690,
+                1650
+            ],
+            "top": [
+                540,
+                1380
+>>>>>>> Stashed changes
             ]
         }
     }

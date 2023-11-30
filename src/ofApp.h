@@ -187,6 +187,12 @@ public:
     map<string, ofColor> appColors;
     vector <ScoreData> scoreData;
     TreeData xmasTree;
+<<<<<<< Updated upstream
+=======
+    ofImage treeGraphic;
+    ofImage grid;
+        
+>>>>>>> Stashed changes
     int alpha = 0;
     
     ofTrueTypeFont font;    
