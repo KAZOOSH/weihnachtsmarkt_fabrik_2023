@@ -136,6 +136,9 @@ void ofApp::update()
     string message = udpMessage;
     if (message != "")
     {
+        if (isDebug) {
+            cout << message << endl;
+        }
         if (message[0] == 's' || message[0] == 'S' ){
             int id = ofToInt(message.substr(2, 1))-1;
             if (ofGetElapsedTimeMillis() - player[id].lastShot > 200)
@@ -219,6 +222,7 @@ void ofApp::draw()
     screen.end();
 
     drawScreen(0);
+
 }
 
 void ofApp::drawWindow2(ofEventArgs &args)
@@ -324,6 +328,7 @@ void ofApp::processKeyPressedEvent(int key, int screenId)
         for (size_t i = 0; i < warper.size(); i++)
         {
             warper[i].hide();
+            isDebug = false;
         }
     }
     if (key == 'd' || key == 'D')
@@ -335,12 +340,14 @@ void ofApp::processKeyPressedEvent(int key, int screenId)
                 warper[i].enableKeyboardShortcuts();
                 warper[i].enableMouseControls();
                 warper[i].show();
+                isDebug = true;
             }
             else
             {
                 warper[i].disableKeyboardShortcuts();
                 warper[i].disableMouseControls();
                 warper[i].hide();
+                isDebug = false;
             }
         }
     }
@@ -374,6 +381,9 @@ void ofApp::processKeyPressedEvent(int key, int screenId)
         setupTexts();
         setupTreeData(settings);
     }
+    if (key == 'f') {
+        ofToggleFullscreen();
+    }
 }
 
 //--------------------------------------------------------------
@@ -394,7 +404,7 @@ void ofApp::mousePressed(int x, int y, int button)
 
 void ofApp::mouseMoved(int x, int y)
 {
-   player[0].catapultPos = ofVec2f(ofMap(x,0,screen.getWidth(),0,100),ofMap(y,0,screen.getHeight(),100,35));
+   //player[0].catapultPos = ofVec2f(ofMap(x,0,screen.getWidth(),0,100),ofMap(y,0,screen.getHeight(),100,35));
 }
 
 
@@ -909,7 +919,7 @@ void ofApp::drawTree(TreeData tree)
     ofSetColor(tree.trunk);
     ofDrawTriangle(tree.topTrunk[0], tree.topTrunk[1], tree.rightTrunk[0], tree.rightTrunk[1], tree.leftTrunk[0], tree.leftTrunk[1]);
 
-    /*
+    
     int hTree = tree.left[1] - tree.top[1];
     int wTree = tree.right[0] - tree.left[0];
     int xCenter = wTree*0.5 + tree.left[0];
@@ -937,14 +947,14 @@ void ofApp::drawTree(TreeData tree)
 
     ofPopStyle();
     treeBg.end();
-    */
+    
 
     ofSetColor(255);
     ofFill();
     //ofDrawTriangle(tree.top[0], tree.top[1], tree.right[0], tree.right[1], tree.left[0], tree.left[1]);
     treeBg.draw(0,0);    
 
-    treeGraphic.draw(xmasTree.left[0] - 60, xmasTree.top[1] - 10, 1020, 1224);    
+    //treeGraphic.draw(xmasTree.left[0] - 60, xmasTree.top[1] - 10, 1020, 1224);    
 }
 
 void ofApp::drawIdle()

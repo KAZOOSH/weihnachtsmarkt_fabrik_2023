@@ -206,6 +206,6 @@ public:
     vector		<shared_ptr<ofxBox2dJoint>>	    joints;			  //	joints
     map<string, string> jointsToCreate;
     vector<string> jointsToDelete;
-
+    bool isDebug = false;
 
 };
